@@ -1,0 +1,45 @@
+version: "3"
+services:
+  database:
+    build:
+      context: ./backend/database
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/static:/app/static
+      - ./frontend/vite.config.js:/app/vite.config.js
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/svelte.config.js:/app/svelte.config.js
+volumes:
+  database-data:
