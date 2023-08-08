@@ -11,58 +11,20 @@ on:
       - "backend/**"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Build backend and backend-tester
-        run: |
-          docker-compose -f docker-compose.test.yaml build backend backend-tester
-
-      - name: Save backend Docker image
-        run: |
-          docker save full-stack-skeleton_backend:latest | gzip > backend-image.tar.gz
-
-      - name: Upload backend Docker image
-        uses: actions/upload-artifact@v2
-        with:
-          name: backend-image
-          path: backend-image.tar.gz
-
-      - name: Save backend-tester Docker image
-        run: |
-          docker save full-stack-skeleton_backend-tester:latest | gzip > backend-tester-image.tar.gz
-
-      - name: Upload backend-tester Docker image
-        uses: actions/upload-artifact@v2
-        with:
-          name: backend-tester-image
-          path: backend-tester-image.tar.gz
-
   test:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download backend-tester Docker image
-        uses: actions/download-artifact@v2
-        with:
-          name: backend-tester-image
-
-      - name: Load backend-tester Docker image
+      - name: Build backend-tester
         run: |
-          gzip -d backend-tester-image.tar.gz
-          docker load < backend-tester-image.tar
+          docker-compose -f docker-compose.test.yaml build backend-tester
 
       - name: Run integration tests
         run: |
-          docker-compose -f docker-compose.test.yaml up -d backend-tester
+          docker-compose -f docker-compose.test.yaml up backend-tester
 
       - name: Cleanup
         run: |
@@ -74,18 +36,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download backend Docker image
-        uses: actions/download-artifact@v2
-        with:
-          name: backend-image
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Load backend Docker image
+      - name: Build backend
         run: |
-          gzip -d backend-image.tar.gz
-          docker load < backend-image.tar
+          docker-compose -f docker-compose.test.yaml build backend
 
-      - name: Deploy to Docker Hub
+      - name: Tag and Push to Docker Hub
         run: |
           docker tag full-stack-skeleton_backend:latest gwkline/full-stack-skeleton:backend-latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push gwkline/full-stack-skeleton:backend-latest
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
