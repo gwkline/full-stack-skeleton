@@ -60,13 +60,9 @@ jobs:
           gzip -d backend-tester-image.tar.gz
           docker load < backend-tester-image.tar
 
-      - name: Start backend
-        run: |
-          docker-compose -f docker-compose.test.yaml up -d backend-tester
-
       - name: Run integration tests
         run: |
-          docker exec $(docker-compose -f docker-compose.test.yaml ps -q backend-tester) go test ./...
+          docker-compose -f docker-compose.test.yaml up -d backend-tester
 
       - name: Cleanup
         run: |

@@ -15,13 +15,9 @@ RUN go build -o main .
 # Final stage
 FROM golang:1.20-alpine
 
-# If you need bash or openssh at runtime, install them here.
-# Otherwise, omit this.
-RUN apk --no-cache add bash
-
 WORKDIR /app
 
 # Copy the entire source code and dependencies
 COPY --from=builder /app .
 
-CMD ./main
+CMD go test
