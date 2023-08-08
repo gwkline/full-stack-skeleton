@@ -30,7 +30,7 @@ func main() {
 	if env == "production" {
 		router.Use(cors.New(cors.Config{
 			AllowOrigins:  []string{"http://localhost:8080"},
-			AllowMethods:  []string{"OPTIONS", "POST", "GET", "PUT"},
+			AllowMethods:  []string{"OPTIONS", "POST", "GET", "PUT", "DELETE"},
 			AllowHeaders:  []string{"*"},
 			ExposeHeaders: []string{"Content-Length"},
 		}))
