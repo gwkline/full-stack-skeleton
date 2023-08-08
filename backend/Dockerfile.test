@@ -19,4 +19,4 @@ WORKDIR /app
 # Copy the source code and dependencies
 COPY --from=builder /app ./
 
-CMD go test
+CMD go test -coverprofile=coverage.out

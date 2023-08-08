@@ -26,6 +26,17 @@ jobs:
         run: |
           docker-compose -f docker-compose.test.yaml up backend-tester
 
+      - name: Copy coverage report out of container
+        run: |
+          docker cp $(docker-compose -f docker-compose.test.yaml ps -q backend-tester):/app/coverage.out coverage.out
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          file: ./coverage.out
+
       - name: Cleanup
         run: |
           docker-compose -f docker-compose.test.yaml down
