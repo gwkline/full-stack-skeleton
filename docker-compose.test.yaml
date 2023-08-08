@@ -17,4 +17,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     depends_on:
+      - backend
+
+  frontend-tester:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.test
+    depends_on:
       - backend-tester

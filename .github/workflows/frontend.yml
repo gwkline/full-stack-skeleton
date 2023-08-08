@@ -1,0 +1,50 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    paths:
+      - "frontend/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "frontend/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build frontend for testing
+        run: |
+          docker-compose -f docker-compose.test.yaml build frontend-tester
+
+      - name: Start frontend for testing
+        run: |
+          docker-compose -f docker-compose.test.yaml up -d frontend-tester
+
+      # If you have any frontend tests, run them here.
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build frontend for production
+        run: |
+          docker-compose -f docker-compose.test.yaml build frontend
+
+      - name: Deploy to Docker Hub
+        run: |
+          docker tag full-stack-skeleton_frontend:latest gwkline/full-stack-skeleton:frontend-latest
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push gwkline/full-stack-skeleton:frontend-latest
