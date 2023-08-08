@@ -1,0 +1,54 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "backend/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build backend-tester
+        run: |
+          docker-compose -f docker-compose.test.yaml build backend-tester
+
+      - name: Run integration tests
+        run: |
+          docker-compose -f docker-compose.test.yaml up backend-tester
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build backend
+        run: |
+          docker-compose -f docker-compose.test.yaml build backend
+
+      - name: Tag and Push to Docker Hub
+        run: |
+          docker tag full-stack-skeleton_backend:latest gwkline/full-stack-skeleton:backend-latest
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push gwkline/full-stack-skeleton:backend-latest
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
