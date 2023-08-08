@@ -1,7 +1,7 @@
 # Build stage
 FROM golang:1.20-alpine AS builder
 
-RUN apk update && apk add --no-cache git
+RUN apk add --no-cache git
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ FROM golang:1.20-alpine
 
 WORKDIR /app
 
-# Copy the entire source code and dependencies
-COPY --from=builder /app .
+# Copy the source code and dependencies
+COPY --from=builder /app ./
 
 CMD go test

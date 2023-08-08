@@ -21,9 +21,8 @@ RUN apk --no-cache add bash
 
 WORKDIR /app
 
-# Copy the binary from the build stage
-COPY --from=builder /app/main .
-COPY --from=builder /app/wait.sh .
+# Copy the binary and script from the build stage
+COPY --from=builder /app/main /app/wait.sh ./
 
 # Make sure the script is executable
 RUN chmod +x ./wait.sh

@@ -18,11 +18,3 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend-tester
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/static:/app/static
-      - ./frontend/vite.config.js:/app/vite.config.js
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/svelte.config.js:/app/svelte.config.js
