@@ -1,6 +1,6 @@
 version: "3"
 services:
-  backend-prod:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -10,8 +10,7 @@ services:
   backend-tester:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-      target: tester # Use the tester build target
+      dockerfile: Dockerfile.test
 
   frontend:
     build:
