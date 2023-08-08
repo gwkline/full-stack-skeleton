@@ -29,6 +29,29 @@ func TestGetEnv(t *testing.T) {
 	}
 }
 
+func TestInitSentry(t *testing.T) {
+	// Init Sentry
+	err := InitSentry("https://sentry.io/")
+	if err != true {
+		t.Errorf("Expected true, got false")
+	}
+}
+
+func TestMainExecution(t *testing.T) {
+	go main()
+
+	req, _ := http.NewRequest("GET", "/", nil)
+
+	w := httptest.NewRecorder()
+	r := gin.Default()
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Errorf("Expected status %d, got %d", http.StatusOK, w.Code)
+	}
+
+}
+
 func TestLoadConfig(t *testing.T) {
 	// Mock environment variables
 	os.Setenv("PORT", "8081")

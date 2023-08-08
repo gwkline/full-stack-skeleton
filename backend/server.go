@@ -72,17 +72,26 @@ func SetupRouter(env string) *gin.Engine {
 	return router
 }
 
+func InitSentry(dsn string) bool {
+	// Sentry Initialization
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              dsn,
+		EnableTracing:    true,
+		TracesSampleRate: 1.0,
+	})
+
+	if err != nil {
+		fmt.Printf("Sentry initialization failed: %v", err)
+		return false
+	}
+
+	return true
+}
+
 func main() {
 	cfg := LoadConfig()
 
-	// Sentry Initialization
-	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              cfg.SentryDSN,
-		EnableTracing:    true,
-		TracesSampleRate: 1.0,
-	}); err != nil {
-		fmt.Printf("Sentry initialization failed: %v", err)
-	}
+	InitSentry(cfg.SentryDSN)
 
 	if cfg.Env == "production" || cfg.Env == "development" {
 		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
