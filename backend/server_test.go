@@ -36,6 +36,7 @@ func TestLoadConfig(t *testing.T) {
 	os.Setenv("POSTGRES_USER", "testUser")
 	os.Setenv("POSTGRES_PASSWORD", "testPass")
 	os.Setenv("POSTGRES_DB", "testDB")
+	os.Setenv("SENTRY_BE_DSN", "https://sentry.io/")
 
 	expectedConfig := Config{
 		Port:             "8081",
@@ -43,6 +44,7 @@ func TestLoadConfig(t *testing.T) {
 		DatabaseUser:     "testUser",
 		DatabasePassword: "testPass",
 		DatabaseName:     "testDB",
+		SentryDSN:        "https://sentry.io/",
 	}
 
 	config := LoadConfig()
