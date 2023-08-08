@@ -11,52 +11,20 @@ on:
       - "backend/**"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Build backend
-        run: |
-          docker-compose -f docker-compose.test.yaml build backend
-
-      - name: Save Docker image
-        run: |
-          docker save full-stack-skeleton_backend:latest | gzip > backend-image.tar.gz
-
-      - name: Upload Docker image
-        uses: actions/upload-artifact@v2
-        with:
-          name: backend-image
-          path: backend-image.tar.gz
-
   test:
-    needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download Docker image
-        uses: actions/download-artifact@v2
-        with:
-          name: backend-image
-
-      - name: Load Docker image
+      - name: Build backend-tester
         run: |
-          gzip -d backend-image.tar.gz
-          docker load < backend-image.tar
-
-      - name: Start backend
-        run: |
-          docker-compose -f docker-compose.test.yaml up -d backend
+          docker-compose -f docker-compose.test.yaml build backend-tester
 
       - name: Run integration tests
         run: |
-          docker exec $(docker-compose -f docker-compose.test.yaml ps -q backend) go test
+          docker-compose -f docker-compose.test.yaml up backend-tester
 
       - name: Cleanup
         run: |
@@ -68,18 +36,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Docker image
-        uses: actions/download-artifact@v2
-        with:
-          name: backend-image
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Load Docker image
+      - name: Build backend
         run: |
-          gzip -d backend-image.tar.gz
-          docker load < backend-image.tar
+          docker-compose -f docker-compose.test.yaml build backend
 
-      - name: Deploy to Docker Hub
+      - name: Tag and Push to Docker Hub
         run: |
           docker tag full-stack-skeleton_backend:latest gwkline/full-stack-skeleton:backend-latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push gwkline/full-stack-skeleton:backend-latest
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
