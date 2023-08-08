@@ -42,13 +42,21 @@ jobs:
           name: backend-tester-image
           path: backend-tester-image.tar.gz
 
+      - name: Upload docker-compose.test.yaml
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-compose-test
+          path: docker-compose.test.yaml
+
   test:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Download docker-compose.test.yaml
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-compose-test
 
       - name: Download backend-tester Docker image
         uses: actions/download-artifact@v2
