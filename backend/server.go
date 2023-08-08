@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -14,19 +15,30 @@ import (
 
 const defaultPort = "8888"
 
-func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
+type Config struct {
+	Port, Env, DatabaseUser, DatabasePassword, DatabaseName string
+}
+
+func LoadConfig() Config {
+	return Config{
+		Port:             getEnv("PORT", defaultPort),
+		Env:              os.Getenv("ENV"),
+		DatabaseUser:     os.Getenv("POSTGRES_USER"),
+		DatabasePassword: os.Getenv("POSTGRES_PASSWORD"),
+		DatabaseName:     os.Getenv("POSTGRES_DB"),
 	}
+}
 
-	databaseUser := os.Getenv("POSTGRES_USER")
-	databasePassword := os.Getenv("POSTGRES_PASSWORD")
-	databaseName := os.Getenv("POSTGRES_DB")
+func getEnv(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
+}
 
+func SetupRouter(env string) *gin.Engine {
 	router := gin.Default()
 
-	env := os.Getenv("ENV")
 	if env == "production" {
 		router.Use(cors.New(cors.Config{
 			AllowOrigins:  []string{"http://localhost:8080"},
@@ -34,17 +46,29 @@ func main() {
 			AllowHeaders:  []string{"*"},
 			ExposeHeaders: []string{"Content-Length"},
 		}))
-		database.InitDB(databaseUser, databasePassword, databaseName)
 	} else if env == "development" {
 		router.Use(cors.Default())
-		database.InitDB(databaseUser, databasePassword, databaseName)
 	} else {
 		router.Use(cors.Default())
 	}
 
+	router.OPTIONS("/graphql", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 	router.POST("/graphql", graphqlHandler())
 	router.GET("/", playgroundHandler())
-	router.Run(":" + port)
+	return router
+}
+
+func main() {
+	cfg := LoadConfig()
+
+	if cfg.Env == "production" || cfg.Env == "development" {
+		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
+	}
+
+	router := SetupRouter(cfg.Env)
+	router.Run(":" + cfg.Port)
 }
 
 func graphqlHandler() gin.HandlerFunc {
