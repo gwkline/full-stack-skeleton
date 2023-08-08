@@ -19,7 +19,6 @@ const (
 
 func InitDB(user, password, dbname string) {
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, dbname)
-	log.Println(psqlInfo)
 
 	database, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
