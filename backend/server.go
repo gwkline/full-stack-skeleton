@@ -29,7 +29,7 @@ func LoadConfig() Config {
 		DatabaseUser:     os.Getenv("POSTGRES_USER"),
 		DatabasePassword: os.Getenv("POSTGRES_PASSWORD"),
 		DatabaseName:     os.Getenv("POSTGRES_DB"),
-		SentryDSN:        os.Getenv("SENTRY_DSN"),
+		SentryDSN:        os.Getenv("SENTRY_BE_DSN"),
 	}
 }
 
@@ -65,6 +65,7 @@ func SetupRouter(env string) *gin.Engine {
 	router.OPTIONS("/graphql", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+	router.StaticFile("/schema.graphqls", "./graph/schema.graphqls")
 	router.POST("/graphql", graphqlHandler())
 	router.GET("/", playgroundHandler())
 

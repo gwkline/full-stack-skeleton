@@ -35,6 +35,7 @@
 	"type": "module",
 	"dependencies": {
 		"@kitql/client": "^0.5.12",
+		"@sentry/sveltekit": "^7.61.1",
 		"graphql": "^16.7.1"
 	}
 }
