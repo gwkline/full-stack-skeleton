@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -27,7 +26,6 @@ func TestGraphQLHandler(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
-		log.Println(w.Body.String())
 		t.Errorf("GraphQL endpoint returned wrong status code: got %v want %v", w.Code, http.StatusOK)
 	}
 }
