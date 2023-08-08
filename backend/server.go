@@ -24,8 +24,6 @@ func main() {
 	databasePassword := os.Getenv("POSTGRES_PASSWORD")
 	databaseName := os.Getenv("POSTGRES_DB")
 
-	database.InitDB(databaseUser, databasePassword, databaseName)
-
 	router := gin.Default()
 
 	env := os.Getenv("ENV")
@@ -36,6 +34,10 @@ func main() {
 			AllowHeaders:  []string{"*"},
 			ExposeHeaders: []string{"Content-Length"},
 		}))
+		database.InitDB(databaseUser, databasePassword, databaseName)
+	} else if env == "development" {
+		router.Use(cors.Default())
+		database.InitDB(databaseUser, databasePassword, databaseName)
 	} else {
 		router.Use(cors.Default())
 	}
