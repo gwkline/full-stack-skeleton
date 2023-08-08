@@ -17,10 +17,7 @@ func TestGraphQLHandler(t *testing.T) {
 	r.POST("/graphql", graphqlHandler())
 
 	query := `{
-		"query": "{ todos { 
-			id
-			text
-			 } }"
+		"query": "{ todos { id } }"
 	}`
 
 	req, _ := http.NewRequest("POST", "/graphql", bytes.NewBufferString(query))
