@@ -1,5 +1,12 @@
 version: "3"
 services:
+  backend-prod:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+
   backend-tester:
     build:
       context: ./backend

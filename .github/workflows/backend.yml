@@ -18,19 +18,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build backend
+      - name: Build backend-prod and backend-tester
         run: |
-          docker-compose -f docker-compose.test.yaml build backend
+          docker-compose -f docker-compose.test.yaml build backend-prod backend-tester
 
-      - name: Save Docker image
+      - name: Save backend Docker image
         run: |
-          docker save full-stack-skeleton_backend:latest | gzip > backend-image.tar.gz
+          docker save full-stack-skeleton_backend_prod:latest | gzip > backend-prod-image.tar.gz
 
-      - name: Upload Docker image
+      - name: Upload backend Docker image
         uses: actions/upload-artifact@v2
         with:
-          name: backend-image
-          path: backend-image.tar.gz
+          name: backend-prod-image
+          path: backend-prod-image.tar.gz
+
+      - name: Save backend-tester Docker image
+        run: |
+          docker save full-stack-skeleton_backend_tester:latest | gzip > backend-tester-image.tar.gz
+
+      - name: Upload backend-tester Docker image
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-tester-image
+          path: backend-tester-image.tar.gz
 
   test:
     needs: build
@@ -40,23 +50,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download Docker image
+      - name: Download backend-tester Docker image
         uses: actions/download-artifact@v2
         with:
-          name: backend-image
+          name: backend-tester-image
 
-      - name: Load Docker image
+      - name: Load backend-tester Docker image
         run: |
-          gzip -d backend-image.tar.gz
-          docker load < backend-image.tar
-
-      - name: Start backend
-        run: |
-          docker-compose -f docker-compose.test.yaml up -d backend
+          gzip -d backend-tester-image.tar.gz
+          docker load < backend-tester-image.tar
 
       - name: Run integration tests
         run: |
-          docker exec $(docker-compose -f docker-compose.test.yaml ps -q backend) go test
+          docker-compose -f docker-compose.test.yaml up backend-tester
 
       - name: Cleanup
         run: |
@@ -64,21 +70,22 @@ jobs:
 
   deploy:
     needs: test
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download Docker image
+      - name: Download backend Docker image
         uses: actions/download-artifact@v2
         with:
-          name: backend-image
+          name: backend-prod-image
 
-      - name: Load Docker image
+      - name: Load backend Docker image
         run: |
-          gzip -d backend-image.tar.gz
-          docker load < backend-image.tar
+          gzip -d backend-prod-image.tar.gz
+          docker load < backend-prod-image.tar
 
       - name: Deploy to Docker Hub
         run: |
-          docker tag full-stack-skeleton_backend:latest gwkline/full-stack-skeleton:backend-latest
+          docker tag full-stack-skeleton_backend_prod:latest gwkline/full-stack-skeleton:backend-latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push gwkline/full-stack-skeleton:backend-latest
