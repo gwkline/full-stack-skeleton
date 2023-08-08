@@ -35,11 +35,5 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    volumes:
-      - ./frontend/src:/app/src
-      - ./frontend/static:/app/static
-      - ./frontend/vite.config.js:/app/vite.config.js
-      - ./frontend/tsconfig.json:/app/tsconfig.json
-      - ./frontend/svelte.config.js:/app/svelte.config.js
 volumes:
   database-data:
