@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.20-alpine AS builder
+FROM golang:alpine AS builder
 
 RUN apk add --no-cache git
 
@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Final stage
-FROM golang:1.20-alpine
+FROM golang:alpine
 
 WORKDIR /app
 
