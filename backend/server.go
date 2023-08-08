@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/getsentry/sentry-go"
+	sentrygin "github.com/getsentry/sentry-go/gin"
 	"github.com/gwkline/full-stack-infra/backend/database"
 	"github.com/gwkline/full-stack-infra/backend/graph"
 
@@ -16,7 +19,7 @@ import (
 const defaultPort = "8888"
 
 type Config struct {
-	Port, Env, DatabaseUser, DatabasePassword, DatabaseName string
+	Port, Env, DatabaseUser, DatabasePassword, DatabaseName, SentryDSN string
 }
 
 func LoadConfig() Config {
@@ -26,6 +29,7 @@ func LoadConfig() Config {
 		DatabaseUser:     os.Getenv("POSTGRES_USER"),
 		DatabasePassword: os.Getenv("POSTGRES_PASSWORD"),
 		DatabaseName:     os.Getenv("POSTGRES_DB"),
+		SentryDSN:        os.Getenv("SENTRY_DSN"),
 	}
 }
 
@@ -39,29 +43,45 @@ func getEnv(key, fallback string) string {
 func SetupRouter(env string) *gin.Engine {
 	router := gin.Default()
 
-	if env == "production" {
-		router.Use(cors.New(cors.Config{
-			AllowOrigins:  []string{"http://localhost:8080"},
-			AllowMethods:  []string{"OPTIONS", "POST", "GET", "PUT", "DELETE"},
-			AllowHeaders:  []string{"*"},
-			ExposeHeaders: []string{"Content-Length"},
-		}))
-	} else if env == "development" {
-		router.Use(cors.Default())
-	} else {
-		router.Use(cors.Default())
+	// Middleware
+	sentryMiddleware := sentrygin.New(sentrygin.Options{})
+	defaultCORS := cors.Default()
+	prodCORS := cors.New(cors.Config{
+		AllowOrigins:  []string{"http://localhost:8080"},
+		AllowMethods:  []string{"OPTIONS", "POST", "GET", "PUT", "DELETE"},
+		AllowHeaders:  []string{"*"},
+		ExposeHeaders: []string{"Content-Length"},
+	})
+
+	// Apply Middleware based on environment
+	switch env {
+	case "production":
+		router.Use(sentryMiddleware, prodCORS)
+	default:
+		router.Use(sentryMiddleware, defaultCORS)
 	}
 
+	// Routes
 	router.OPTIONS("/graphql", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
 	router.POST("/graphql", graphqlHandler())
 	router.GET("/", playgroundHandler())
+
 	return router
 }
 
 func main() {
 	cfg := LoadConfig()
+
+	// Sentry Initialization
+	if err := sentry.Init(sentry.ClientOptions{
+		Dsn:              cfg.SentryDSN,
+		EnableTracing:    true,
+		TracesSampleRate: 1.0,
+	}); err != nil {
+		fmt.Printf("Sentry initialization failed: %v", err)
+	}
 
 	if cfg.Env == "production" || cfg.Env == "development" {
 		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
