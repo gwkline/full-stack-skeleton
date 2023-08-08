@@ -20,9 +20,19 @@ jobs:
 
       - name: Build backend
         run: |
-          docker-compose up -d --build backend
-          docker exec $(docker-compose ps -q backend) go test
-          docker-compose down
+          docker-compose -f docker-compose.test.yaml build backend
+
+      - name: Start backend
+        run: |
+          docker-compose -f docker-compose.test.yaml up -d backend
+
+      - name: Run integration tests
+        run: |
+          docker exec $(docker-compose -f docker-compose.test.yaml ps -q backend) go test
+
+      - name: Cleanup
+        run: |
+          docker-compose -f docker-compose.test.yaml down
 
   # deploy:
   #   needs: build-and-test
