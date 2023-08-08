@@ -12,6 +12,16 @@ RUN go mod download
 COPY . .
 RUN go build -o main .
 
+FROM golang:1.20-alpine AS tester
+
+WORKDIR /app
+
+COPY --from=builder /app/main .
+COPY --from=builder /app/wait.sh .
+COPY . .
+
+CMD go test
+
 # Final stage
 FROM alpine:latest
 
@@ -30,4 +40,4 @@ RUN chmod +x ./wait.sh
 
 EXPOSE 8888
 
-CMD ./wait.sh database:5432 -- ./main
+CMD ./wait.sh -t 5 database:5432 -- ./main

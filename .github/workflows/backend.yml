@@ -56,7 +56,6 @@ jobs:
 
       - name: Run integration tests
         run: |
-          sleep 10
           docker exec $(docker-compose -f docker-compose.test.yaml ps -q backend) go test
 
       - name: Cleanup

@@ -1,18 +1,17 @@
 version: "3"
 services:
-  backend:
+  backend-tester:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    ports:
-      - "8888:8888"
+      target: tester # Use the tester build target
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     depends_on:
-      - backend
+      - backend-tester
     ports:
       - "3000:3000"
     volumes:
