@@ -11,7 +11,7 @@ on:
       - "backend/**"
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +21,34 @@ jobs:
       - name: Build backend
         run: |
           docker-compose -f docker-compose.test.yaml build backend
+
+      - name: Save Docker image
+        run: |
+          docker save full-stack-skeleton_backend:latest | gzip > backend-image.tar.gz
+
+      - name: Upload Docker image
+        uses: actions/upload-artifact@v2
+        with:
+          name: backend-image
+          path: backend-image.tar.gz
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-image
+
+      - name: Load Docker image
+        run: |
+          gzip -d backend-image.tar.gz
+          docker load < backend-image.tar
 
       - name: Start backend
         run: |
@@ -35,11 +63,21 @@ jobs:
           docker-compose -f docker-compose.test.yaml down
 
   deploy:
-    needs: build-and-test
+    needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
+      - name: Download Docker image
+        uses: actions/download-artifact@v2
+        with:
+          name: backend-image
+
+      - name: Load Docker image
+        run: |
+          gzip -d backend-image.tar.gz
+          docker load < backend-image.tar
+
       - name: Deploy to Docker Hub
         run: |
           docker tag full-stack-skeleton_backend:latest gwkline/full-stack-skeleton:backend-latest
