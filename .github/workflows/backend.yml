@@ -1,0 +1,41 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - "backend/**"
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "backend/**"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build backend
+        run: |
+          docker-compose up -d --build backend
+          docker exec $(docker-compose ps -q backend) go test
+          docker-compose down
+
+  # deploy:
+  #   needs: build-and-test
+  #   if: github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v2
+
+  #     - name: Deploy
+  #       run: |
+  #         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+  #         docker push gwkline/full-stack-skeleton:tagname
+
+  #         # Add commands for deployment to your production environment here.
