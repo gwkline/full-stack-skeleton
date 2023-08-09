@@ -31,7 +31,7 @@ func InitDB(user, password, dbname string) {
 	}
 
 	db = database
-	log.Println("Connected to the database!")
+	log.Println("Connected to the database")
 }
 
 // func InsertContact(input model.NewContact) (*model.Contact, error) {
