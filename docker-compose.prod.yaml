@@ -3,7 +3,7 @@ services:
   database:
     build:
       context: ./backend/database
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "5432:5432"
     restart: always
@@ -17,7 +17,7 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     depends_on:
       - database
     ports:
@@ -28,7 +28,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     depends_on:
       - backend
     ports:
