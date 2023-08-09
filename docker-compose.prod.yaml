@@ -22,8 +22,6 @@ services:
       - database
     ports:
       - "8888:8888"
-    env_file:
-      - .env
 
   frontend:
     build:
@@ -33,7 +31,6 @@ services:
       - backend
     ports:
       - "3000:3000"
-    env_file:
-      - .env
+
 volumes:
   database-data:

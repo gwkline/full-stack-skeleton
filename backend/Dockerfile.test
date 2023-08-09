@@ -1,17 +1,15 @@
-# Build stage
 FROM golang:alpine AS builder
 
 RUN apk add --no-cache git
 
 WORKDIR /app
 
-# Copy go mod and sum files first to leverage Docker cache
+# Copy go mod and sum files first to leverage caching
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 
-# Final stage
 FROM golang:alpine
 
 WORKDIR /app
