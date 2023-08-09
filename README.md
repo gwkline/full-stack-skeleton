@@ -159,14 +159,13 @@ gh pr create
 Right now testing is only supported through unit tests on the Go backend. There are two ways to handle this testing currently. If you'd prefer to test outside of the Docker container:
 
 ```bash
-cd ./backend
-go test
+(cd ./backend && go test)
 ```
 
 Or you can use the pre-configured testing Docker flow
 
 ```bash
-docker-compose -f docker-compose.test.yaml up -d --build
+docker build -f ./backend/Dockerfile.test -t backend-tester ./backend && docker run --name backend-tester backend-tester && docker rm backend-tester
 ```
 
 ---

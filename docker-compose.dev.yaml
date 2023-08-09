@@ -3,7 +3,7 @@ services:
   database:
     build:
       context: ./backend/database
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "5432:5432"
     restart: always

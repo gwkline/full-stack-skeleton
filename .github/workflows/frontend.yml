@@ -17,23 +17,34 @@ jobs:
       actions: read
       contents: read
       security-events: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Cache npm modules
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Build frontend for testing
         run: |
-          docker-compose -f docker-compose.test.yaml build frontend-tester
+          docker build -f ./frontend/Dockerfile.test -t frontend-tester ./frontend
 
       - name: Start frontend for testing
         run: |
-          docker-compose -f docker-compose.test.yaml up -d frontend-tester
+          docker run -d --name frontend-tester frontend-tester
 
       # If you have any frontend tests, run them here.
 
       - name: Cleanup
         run: |
-          docker-compose -f docker-compose.test.yaml down
+          docker stop frontend-tester
+          docker rm frontend-tester
 
   analyze:
     runs-on: ubuntu-latest
@@ -61,16 +72,26 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Cache npm modules (for Docker build)
+      - name: Cache Node modules
+        uses: actions/cache@v2
+        with:
+          path: frontend/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Build frontend for production
         run: |
-          docker-compose -f docker-compose.test.yaml build frontend
+          docker build -f ./frontend/Dockerfile.prod -t frontend ./frontend
 
       - name: Deploy to Docker Hub
         run: |
-          docker tag full-stack-skeleton_frontend:latest gwkline/full-stack-skeleton:frontend-latest
+          docker tag frontend:latest gwkline/full-stack-skeleton:frontend-latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push gwkline/full-stack-skeleton:frontend-latest

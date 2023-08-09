@@ -1,22 +1,19 @@
-# Build stage
 FROM golang:alpine AS builder
 
 RUN apk add --no-cache git
 
 WORKDIR /app
 
-# Copy go mod and sum files first to leverage Docker cache
+# Copy go mod and sum files first to leverage caching
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 RUN go build -o main .
 
-# Final stage
 FROM alpine:latest
 
-# If you need bash or openssh at runtime, install them here.
-# Otherwise, omit this.
+# Needed for wait.sh
 RUN apk --no-cache add bash
 
 WORKDIR /app
@@ -24,9 +21,7 @@ WORKDIR /app
 # Copy the binary and script from the build stage
 COPY --from=builder /app/main /app/wait.sh ./
 
-# Make sure the script is executable
-RUN chmod +x ./wait.sh
-
 EXPOSE 8888
 
+RUN chmod +x ./wait.sh
 CMD ./wait.sh -t 5 database:5432 -- ./main
