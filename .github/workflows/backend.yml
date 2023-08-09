@@ -96,7 +96,3 @@ jobs:
           docker tag backend:latest gwkline/full-stack-skeleton:backend-latest
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker push gwkline/full-stack-skeleton:backend-latest
-
-      - name: Cleanup
-        run: |
-          docker rm backend
