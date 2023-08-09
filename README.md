@@ -203,6 +203,6 @@ git push origin new-feature-branch
 
 ## 📄 License
 
-This project is licensed under the `ℹ️  MIT` License. See the [LICENSE](https://github.com/gwkline/full-stack-skeleton/blob/main/LICENSE) file for additional info.
+This project is licensed under the [open-source MIT license](https://github.com/gwkline/full-stack-skeleton/blob/main/LICENSE)
 
 ---
