@@ -7,6 +7,7 @@
 <h3>◦ Developed with the software and tools listed below:</h3>
 
 <p align="center">
+<img src="https://img.shields.io/badge/postgres-%23316192.svg?style&logo=postgresql&logoColor=white" alt="PostgreSQL" />
 <img src="https://img.shields.io/badge/GraphQL-E10098.svg?style&logo=GraphQL&logoColor=white" alt="GraphQL" />
 <img src="https://img.shields.io/badge/Svelte-FF3E00.svg?style&logo=Svelte&logoColor=white" alt="Svelte" />
 <img src="https://img.shields.io/badge/Prettier-F7B93E.svg?style&logo=Prettier&logoColor=black" alt="Prettier" />
