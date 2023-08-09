@@ -10,6 +10,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func TestMain(m *testing.M) {
+	// Setup
+	os.Setenv("PORT", "8081")
+	os.Setenv("ENV", "production")
+	os.Setenv("POSTGRES_USER", "testUser")
+	os.Setenv("POSTGRES_PASSWORD", "testPass")
+	os.Setenv("POSTGRES_DB", "testDB")
+	os.Setenv("SENTRY_BE_DSN", "https://sentry.io/")
+
+	// Run tests
+	code := m.Run()
+
+	// Teardown (if needed)
+
+	os.Exit(code)
+}
+
 func TestGetEnv(t *testing.T) {
 	key := "TEST_ENV_VAR"
 	fallback := "default"
@@ -54,12 +71,6 @@ func TestMainExecution(t *testing.T) {
 
 func TestLoadConfig(t *testing.T) {
 	// Mock environment variables
-	os.Setenv("PORT", "8081")
-	os.Setenv("ENV", "production")
-	os.Setenv("POSTGRES_USER", "testUser")
-	os.Setenv("POSTGRES_PASSWORD", "testPass")
-	os.Setenv("POSTGRES_DB", "testDB")
-	os.Setenv("SENTRY_BE_DSN", "https://sentry.io/")
 
 	expectedConfig := Config{
 		Port:             "8081",

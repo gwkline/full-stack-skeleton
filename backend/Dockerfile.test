@@ -17,4 +17,7 @@ WORKDIR /app
 # Copy the source code and dependencies
 COPY --from=builder /app ./
 
+# Set Gin to release mode for testing
+ENV GIN_MODE=release
+
 CMD go test -coverprofile=coverage.out
