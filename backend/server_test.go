@@ -28,7 +28,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestGetEnv(t *testing.T) {
-	t.Parallel()
 	key := "TEST_ENV_VAR"
 	fallback := "default"
 
@@ -48,7 +47,6 @@ func TestGetEnv(t *testing.T) {
 }
 
 func TestInitSentry(t *testing.T) {
-	t.Parallel()
 	// Init Sentry
 	res := InitSentry("https://sentry.io/")
 	if res != true && res != false {
@@ -57,7 +55,6 @@ func TestInitSentry(t *testing.T) {
 }
 
 func TestMainExecution(t *testing.T) {
-	t.Parallel()
 	go main()
 
 	req, _ := http.NewRequest("GET", "/", nil)
@@ -73,7 +70,6 @@ func TestMainExecution(t *testing.T) {
 }
 
 func TestLoadConfig(t *testing.T) {
-	t.Parallel()
 	// Mock environment variables
 
 	expectedConfig := Config{
@@ -92,7 +88,6 @@ func TestLoadConfig(t *testing.T) {
 }
 
 func TestSetupRouter(t *testing.T) {
-	t.Parallel()
 	gin.SetMode(gin.TestMode)
 
 	tests := []struct {
@@ -120,7 +115,6 @@ func TestSetupRouter(t *testing.T) {
 }
 
 func TestGraphQLHandler(t *testing.T) {
-	t.Parallel()
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
@@ -142,7 +136,6 @@ func TestGraphQLHandler(t *testing.T) {
 }
 
 func TestPlaygroundHandler(t *testing.T) {
-	t.Parallel()
 	gin.SetMode(gin.TestMode)
 
 	r := gin.Default()
