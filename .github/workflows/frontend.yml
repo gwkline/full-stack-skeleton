@@ -13,38 +13,34 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Cache npm modules
-      - name: Cache Node modules
-        uses: actions/cache@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          path: frontend/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('frontend/package-lock.json') }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-buildx-
 
-      - name: Build frontend for testing
-        run: |
-          docker build -f ./frontend/Dockerfile.test -t frontend-tester ./frontend
+      - name: Build and run frontend tests
+        uses: docker/build-push-action@v4
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile.test
+          tags: frontend-tester
+          load: true
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-      - name: Start frontend for testing
-        run: |
-          docker run -d --name frontend-tester frontend-tester
-
-      # If you have any frontend tests, run them here.
-
-      - name: Cleanup
-        run: |
-          docker stop frontend-tester
-          docker rm frontend-tester
+      - name: Run frontend tests
+        run: docker run --name frontend-tester frontend-tester
 
   analyze:
     runs-on: ubuntu-latest
