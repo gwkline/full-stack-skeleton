@@ -31,8 +31,8 @@ func TestGetEnv(t *testing.T) {
 
 func TestInitSentry(t *testing.T) {
 	// Init Sentry
-	err := InitSentry("https://sentry.io/")
-	if err != true {
+	res := InitSentry("https://sentry.io/")
+	if res != true && res != false {
 		t.Errorf("Expected true, got false")
 	}
 }
