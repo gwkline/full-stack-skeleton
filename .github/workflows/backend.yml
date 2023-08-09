@@ -52,7 +52,6 @@ jobs:
 
       - name: Cleanup
         run: |
-          docker stop backend-tester
           docker rm backend-tester
 
   analyze:
