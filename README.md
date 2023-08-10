@@ -109,7 +109,7 @@ _Backend_
 4. Run the following command in `./backend` to regenerate any dependent models, types, or resolvers:
 
 ```bash
-go generate ./...
+go run github.com/99designs/gqlgen generate
 ```
 
 5. Back in `./backend/graph`, update your `schema.resolvers.go` to expose the finished service/resource
