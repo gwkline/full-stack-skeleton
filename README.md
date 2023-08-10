@@ -18,15 +18,21 @@
 <img src="https://img.shields.io/badge/Vite-646CFF.svg?style&logo=Vite&logoColor=white" alt="Vite" />
 <img src="https://img.shields.io/badge/ESLint-4B32C3.svg?style&logo=ESLint&logoColor=white" alt="ESLint" />
 </p>
+<div>
 <img src="https://img.shields.io/github/languages/top/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub top language" />
 <img src="https://img.shields.io/github/languages/code-size/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub code size in bytes" />
 <img src="https://img.shields.io/github/commit-activity/m/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub commit activity" />
 <img src="https://img.shields.io/github/license/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub license" />
 </div>
-
-[![Backend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml)
-[![Frontend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml)
-[![Backend Coverage](https://codecov.io/gh/gwkline/full-stack-skeleton/branch/main/graph/badge.svg?token=FQGXXYYJT1)](https://codecov.io/gh/gwkline/full-stack-skeleton)
+<div>
+<img src="https://img.shields.io/github/license/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub license" />
+</div>
+<div>
+<img src="https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml/badge.svg" alt="Backend CI/CD">
+<img src="https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml/badge.svg" alt="Frontend CI/CD">
+<img src="https://codecov.io/gh/gwkline/full-stack-skeleton/branch/main/graph/badge.svg?token=FQGXXYYJT1" alt="Backend Coverage">
+</div>
+</div>
 
 ---
 
