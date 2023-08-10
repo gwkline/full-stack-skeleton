@@ -9,6 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout repository
@@ -58,6 +59,7 @@ jobs:
 
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     permissions:
       actions: read
       contents: read
@@ -79,9 +81,10 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   deploy:
-    needs: test
     if: github.ref == 'refs/heads/main'
+    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout repository
