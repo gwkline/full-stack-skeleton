@@ -25,7 +25,6 @@
 <img src="https://img.shields.io/github/license/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub license" />
 </div>
 <div>
-<img src="https://img.shields.io/github/license/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub license" />
 </div>
 <div>
 <img src="https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml/badge.svg" alt="Backend CI/CD">
