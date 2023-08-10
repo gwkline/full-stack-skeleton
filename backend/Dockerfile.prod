@@ -13,15 +13,11 @@ RUN go build -o main .
 
 FROM alpine:latest
 
-# Needed for wait.sh
-RUN apk --no-cache add bash
-
 WORKDIR /app
 
 # Copy the binary and script from the build stage
-COPY --from=builder /app/main /app/wait.sh ./
+COPY --from=builder /app/main ./
 
 EXPOSE 8888
 
-RUN chmod +x ./wait.sh
-CMD ./wait.sh -t 5 database:5432 -- ./main
+RUN ./main

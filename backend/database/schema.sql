@@ -9,3 +9,13 @@ CREATE TABLE IF NOT EXISTS contacts (
     createdAt TIMESTAMP NOT NULL,
     updatedAt TIMESTAMP NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    passwordHash VARCHAR(100) NOT NULL,
+    otpSecret VARCHAR(100) NULL,
+    phone VARCHAR(20) NULL,
+    createdAt TIMESTAMP NOT NULL,
+    updatedAt TIMESTAMP NOT NULL
+);

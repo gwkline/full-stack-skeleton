@@ -1,13 +1,22 @@
-FROM golang:alpine
+# Build stage
+FROM golang:alpine AS build-env
 
-RUN apk add --no-cache bash git
-
+# Set up the working directory
 WORKDIR /app
 
-COPY . .
+# Copy go mod and sum files
+COPY go.mod go.sum ./
+
+# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
 RUN go mod download
 
-EXPOSE 8888
+# Final stage
+FROM golang:alpine
 
-RUN chmod +x ./wait.sh
-CMD ./wait.sh database:5432 -- go run server.go
+# Set up the working directory and copy over dependencies and source code
+WORKDIR /app
+COPY --from=build-env /go/pkg/mod /go/pkg/mod
+COPY . .
+
+EXPOSE 8888
+CMD [ "go", "run", "server.go"]
