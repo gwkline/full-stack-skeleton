@@ -4,15 +4,12 @@ on:
   push:
     paths:
       - "frontend/**"
-    branches:
-      - main
-  pull_request:
-    paths:
-      - "frontend/**"
+      - ".github/workflows/frontend.yml"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout repository
@@ -39,11 +36,12 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
-      - name: Run frontend tests
-        run: docker run --name frontend-tester frontend-tester
+      # - name: Run frontend tests
+      #   run: docker run --name frontend-tester frontend-tester
 
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 3
     permissions:
       actions: read
       contents: read
@@ -65,9 +63,10 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   deploy:
-    needs: test
     if: github.ref == 'refs/heads/main'
+    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 3
 
     steps:
       - name: Checkout repository

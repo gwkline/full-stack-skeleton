@@ -8,4 +8,5 @@ import "github.com/gwkline/full-stack-infra/backend/graph/model"
 
 type Resolver struct {
 	todos []*model.Todo
+	users []*model.User
 }

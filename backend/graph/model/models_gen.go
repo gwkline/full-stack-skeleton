@@ -7,7 +7,19 @@ type NewTodo struct {
 	UserID string `json:"userId"`
 }
 
+type NewUser struct {
+	Email    string  `json:"email"`
+	Password string  `json:"password"`
+	Otp      *string `json:"otp,omitempty"`
+	Phone    *string `json:"phone,omitempty"`
+}
+
 type User struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string  `json:"id"`
+	Email     string  `json:"email"`
+	Password  string  `json:"password"`
+	Otp       *string `json:"otp,omitempty"`
+	Phone     *string `json:"phone,omitempty"`
+	CreatedAt int     `json:"createdAt"`
+	UpdatedAt int     `json:"updatedAt"`
 }

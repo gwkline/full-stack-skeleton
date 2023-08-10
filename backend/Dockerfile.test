@@ -1,7 +1,5 @@
 FROM golang:alpine AS builder
 
-RUN apk add --no-cache git
-
 WORKDIR /app
 
 # Copy go mod and sum files first to leverage caching

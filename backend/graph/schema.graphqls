@@ -11,11 +11,24 @@ type Todo {
 
 type User {
   id: ID!
-  name: String!
+  email: String!
+  password: String!
+  otp: String
+  phone: String
+  createdAt: Int!
+  updatedAt: Int!
+}
+
+input NewUser {
+  email: String!
+  password: String!
+  otp: String
+  phone: String
 }
 
 type Query {
   todos: [Todo!]!
+  users: [User!]!
 }
 
 input NewTodo {

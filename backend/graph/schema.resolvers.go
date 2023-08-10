@@ -19,20 +19,26 @@ func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) 
 	todo := &model.Todo{
 		Text:   input.Text,
 		ID:     fmt.Sprintf("T%d", rand),
-		User:   &model.User{ID: input.UserID, Name: "user " + input.UserID},
+		User:   &model.User{ID: input.UserID},
 		UserID: input.UserID,
 	}
 	r.todos = append(r.todos, todo)
 	return todo, nil
 }
 
-func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, error) {
-	return &model.User{ID: obj.UserID, Name: "user " + obj.UserID}, nil
-}
-
 // Todos is the resolver for the todos field.
 func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
 	return r.todos, nil
+}
+
+// Users is the resolver for the users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	panic(fmt.Errorf("not implemented: Users - users"))
+}
+
+// User is the resolver for the user field.
+func (r *todoResolver) User(ctx context.Context, obj *model.Todo) (*model.User, error) {
+	return &model.User{ID: obj.UserID}, nil
 }
 
 // Mutation returns MutationResolver implementation.

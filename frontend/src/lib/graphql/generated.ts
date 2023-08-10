@@ -34,9 +34,17 @@ export type NewTodo = {
   userId: Scalars['String']['input'];
 };
 
+export type NewUser = {
+  email: Scalars['String']['input'];
+  otp?: InputMaybe<Scalars['String']['input']>;
+  password: Scalars['String']['input'];
+  phone?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   todos: Array<Todo>;
+  users: Array<User>;
 };
 
 export type Todo = {
@@ -49,8 +57,13 @@ export type Todo = {
 
 export type User = {
   __typename?: 'User';
+  createdAt: Scalars['Int']['output'];
+  email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  otp?: Maybe<Scalars['String']['output']>;
+  password: Scalars['String']['output'];
+  phone?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['Int']['output'];
 };
 
 /**
