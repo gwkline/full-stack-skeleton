@@ -1,11 +1,6 @@
 <div align="center">
 <h1 align="center">
 <img src="https://upload.wikimedia.org/wikipedia/commons/3/31/Devil_Skull_Icon.svg" width="100" />
-<p align="center">
-[![Backend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml)
-[![Frontend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml)
-[![Backend Coverage](https://codecov.io/gh/gwkline/full-stack-skeleton/branch/main/graph/badge.svg?token=FQGXXYYJT1)](https://codecov.io/gh/gwkline/full-stack-skeleton)
-</p>
 <br>full-stack-skeleton
 </h1>
 <h3>◦ Spin up a bleeding edge web-app in minutes</h3>
@@ -28,6 +23,10 @@
 <img src="https://img.shields.io/github/commit-activity/m/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub commit activity" />
 <img src="https://img.shields.io/github/license/gwkline/full-stack-skeleton?style&color=5D6D7E" alt="GitHub license" />
 </div>
+
+[![Backend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/backend.yml)
+[![Frontend CI/CD](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml/badge.svg)](https://github.com/gwkline/full-stack-skeleton/actions/workflows/frontend.yml)
+[![Backend Coverage](https://codecov.io/gh/gwkline/full-stack-skeleton/branch/main/graph/badge.svg?token=FQGXXYYJT1)](https://codecov.io/gh/gwkline/full-stack-skeleton)
 
 ---
 
