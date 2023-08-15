@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -25,22 +24,17 @@ type Config struct {
 	Port, Env, DatabaseUser, DatabasePassword, DatabaseName, SentryDSN string
 }
 
-func LoadConfig() Config {
-	return Config{
-		Port:             getEnv("PORT", defaultPort),
-		Env:              os.Getenv("ENV"),
-		DatabaseUser:     os.Getenv("POSTGRES_USER"),
-		DatabasePassword: os.Getenv("POSTGRES_PASSWORD"),
-		DatabaseName:     os.Getenv("POSTGRES_DB"),
-		SentryDSN:        os.Getenv("SENTRY_BE_DSN"),
-	}
-}
+func main() {
+	cfg := LoadConfig()
 
-func getEnv(key, fallback string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
+	InitSentry(cfg.SentryDSN)
+
+	if cfg.Env == "production" || cfg.Env == "development" {
+		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
 	}
-	return fallback
+
+	router := SetupRouter(cfg.Env)
+	router.Run(":" + cfg.Port)
 }
 
 func SetupRouter(env string) *gin.Engine {
@@ -73,9 +67,22 @@ func SetupRouter(env string) *gin.Engine {
 	router.OPTIONS("/graphql", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+
+	// Expose schema for introspection
+	// TODO: Add authorization here
 	router.StaticFile("/schema.graphqls", "./graph/schema.graphqls")
-	router.POST("/graphql", graphqlHandler())
 	router.GET("/", playgroundHandler())
+
+	// GraphQL Endpoint
+	router.POST("/graphql", graphqlHandler())
+	router.POST("/auth", func(c *gin.Context) {
+		auth.SignupLoginHandler(c)
+	})
+	router.GET("/auth/google", auth.HandleGoogleAuth)
+	router.GET("/auth/google/callback", auth.HandleGoogleCallback)
+	router.POST("/refresh", func(c *gin.Context) {
+		auth.RefreshTokenHandler(c)
+	})
 
 	return router
 }
@@ -116,74 +123,20 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
-func signupLoginHandler(c *gin.Context) {
-	var login auth.Login
-	if err := c.ShouldBindJSON(&login); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+func LoadConfig() Config {
+	return Config{
+		Port:             getEnv("PORT", defaultPort),
+		Env:              os.Getenv("ENV"),
+		DatabaseUser:     os.Getenv("POSTGRES_USER"),
+		DatabasePassword: os.Getenv("POSTGRES_PASSWORD"),
+		DatabaseName:     os.Getenv("POSTGRES_DB"),
+		SentryDSN:        os.Getenv("SENTRY_BE_DSN"),
 	}
-
-	// Handle Signup
-	if login.Password == "" {
-		// Add your signup logic here
-		// Save the username to your database
-
-		c.JSON(http.StatusOK, gin.H{"message": "Signup successful"})
-		return
-	}
-
-	// Handle Login
-	// Validate username and password with your database
-
-	// If 2FA code is provided, validate it
-
-	// Generate JWT tokens
-	accessToken, _ := auth.GenerateToken(login.Username, auth.AccessTokenDuration)
-	refreshToken, _ := auth.GenerateToken(login.Username, auth.RefreshTokenDuration)
-
-	c.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
 }
 
-func refreshTokenHandler(c *gin.Context) {
-	var data map[string]string
-	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+func getEnv(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
 	}
-
-	refreshToken, ok := data["refresh_token"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
-		return
-	}
-
-	claims, err := auth.ValidateToken(refreshToken)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
-	}
-
-	if time.Unix(claims.ExpiresAt, 0).Before(time.Now()) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token expired"})
-		return
-	}
-
-	newAccessToken, _ := auth.GenerateToken(claims.Username, auth.AccessTokenDuration)
-	c.JSON(http.StatusOK, gin.H{"access_token": newAccessToken})
-}
-
-func main() {
-	cfg := LoadConfig()
-
-	InitSentry(cfg.SentryDSN)
-
-	if cfg.Env == "production" || cfg.Env == "development" {
-		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
-	}
-
-	router := SetupRouter(cfg.Env)
-	router.Run(":" + cfg.Port)
+	return fallback
 }

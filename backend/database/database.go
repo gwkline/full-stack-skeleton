@@ -176,7 +176,7 @@ func GetAllUsers() ([]*model.User, error) {
 	return users, nil
 }
 
-func DeleteUserByID(id int) (*int, error) {
+func DeleteUserByID(id string) (*int, error) {
 	// check if user with given id exists
 	if !CheckIfUserExists(id) {
 		return nil, fmt.Errorf("user with given id does not exists")
@@ -201,8 +201,18 @@ func DeleteUserByID(id int) (*int, error) {
 	return &rowsAffected2, nil
 }
 
-func CheckIfUserExists(id int) bool {
-	err := db.QueryRow(`SELECT id FROM users WHERE id = $1`, id).Scan(&id)
+func CheckIfUserExists(id string, colName ...string) bool {
+
+	var col string
+	if len(colName) > 0 {
+		col = colName[0]
+	} else {
+		col = "id"
+	}
+
+	queryString := fmt.Sprintf("SELECT %s FROM users WHERE %s = $1", col, col)
+	fmt.Println(queryString)
+	err := db.QueryRow(queryString, id).Scan(&id)
 	switch {
 	case err == sql.ErrNoRows:
 		return false
@@ -215,12 +225,8 @@ func CheckIfUserExists(id int) bool {
 }
 
 func UpdateUser(input model.User) (*model.User, error) {
-	userId, err := strconv.Atoi(input.ID)
-	if err != nil {
-		return nil, fmt.Errorf("unable to parse user id")
-	}
 	// check if user with given id exists
-	if !CheckIfUserExists(userId) {
+	if !CheckIfUserExists(input.ID) {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
 
