@@ -75,8 +75,11 @@ func SetupRouter(env string) *gin.Engine {
 
 	// GraphQL Endpoint
 	router.POST("/graphql", graphqlHandler())
-	router.POST("/auth", func(c *gin.Context) {
-		auth.SignupLoginHandler(c)
+	router.POST("/login", func(c *gin.Context) {
+		auth.LoginHandler(c)
+	})
+	router.POST("/signup", func(c *gin.Context) {
+		auth.SignupHandler(c)
 	})
 	router.GET("/auth/google", auth.HandleGoogleAuth)
 	router.GET("/auth/google/callback", auth.HandleGoogleCallback)

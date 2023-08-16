@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/gwkline/full-stack-infra/backend/database"
+	"github.com/gwkline/full-stack-infra/backend/graph/model"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
@@ -40,7 +41,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func SignupLoginHandler(c *gin.Context) {
+func LoginHandler(c *gin.Context) {
 	var login Login
 
 	// Bind JSON body to struct
@@ -54,16 +55,67 @@ func SignupLoginHandler(c *gin.Context) {
 
 	// User has just entered the email field - we need to check if the account exists
 	// to determine the user flow
-	if login.Email == "" {
+	if login.Email == "" || login.Password == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You must pass the email key without a password"})
 		return
-	} else if login.Password == "" {
-		userFound := database.CheckIfUserExists(login.Email, "email")
-		if !userFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+	}
+
+	user, err := database.FindUser(login.Email, "email")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
+
+	if login.Password != "" && login.OTP == "" {
+		if !CheckPasswordHash(login.Password, user.Password) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
 			return
 		}
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Please provide a password"})
+	} else if login.OTP != "" {
+		if !ValidateTOTPToken(*user.Otp, login.OTP) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP"})
+			return
+		}
+	}
+
+	// Generate JWT tokens
+	accessToken, _ := GenerateToken(login.Email, AccessTokenDuration)
+	refreshToken, _ := GenerateToken(login.Email, RefreshTokenDuration)
+
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+		"user":          user,
+	})
+}
+
+func SignupHandler(c *gin.Context) {
+	var login model.NewUser
+
+	// Bind JSON body to struct
+	err := c.BindJSON(&login)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+		return
+	}
+
+	fmt.Println(login)
+
+	if login.Email == "" || login.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "You must pass an email and password in your request body as non-empty strings."})
+		return
+	}
+
+	login.Password, err = HashPassword(login.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error hashing password"})
+		return
+	}
+
+	_, err = database.InsertUser(login)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating user"})
 		return
 	}
 

@@ -121,7 +121,11 @@ func RunMigrations() {
 }
 
 func InsertUser(input model.NewUser) (*model.User, error) {
-	stmt, err := db.Prepare(`INSERT INTO users VALUES(DEFAULT, $1, $2, $3, $4, $5, $6) RETURNING id;`)
+	stmt, err := db.Prepare(`
+	INSERT INTO users (email, passwordHash, otpSecret, phone, createdAt, updatedAt) 
+	VALUES($1, $2, $3, $4, TIMESTAMP 'epoch' + $5 * INTERVAL '1 second', TIMESTAMP 'epoch' + $6 * INTERVAL '1 second') 
+	RETURNING id;
+	`)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +133,7 @@ func InsertUser(input model.NewUser) (*model.User, error) {
 	currentTime := int(time.Now().Unix())
 
 	var id int
-	err = stmt.QueryRow(input.Email, input.Phone, currentTime, currentTime).Scan(&id)
+	err = stmt.QueryRow(input.Email, input.Password, input.Otp, input.Phone, currentTime, currentTime).Scan(&id)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +183,8 @@ func GetAllUsers() ([]*model.User, error) {
 
 func DeleteUserByID(id string) (*int, error) {
 	// check if user with given id exists
-	if !CheckIfUserExists(id) {
+	_, err := FindUser(id)
+	if err != nil {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
 	stmt, err := db.Prepare(`DELETE FROM users WHERE id = $1;`)
@@ -202,7 +207,7 @@ func DeleteUserByID(id string) (*int, error) {
 	return &rowsAffected2, nil
 }
 
-func CheckIfUserExists(id string, colName ...string) bool {
+func FindUser(identifier string, colName ...string) (model.User, error) {
 
 	var col string
 	if len(colName) > 0 {
@@ -211,23 +216,30 @@ func CheckIfUserExists(id string, colName ...string) bool {
 		col = "id"
 	}
 
-	queryString := fmt.Sprintf("SELECT %s FROM users WHERE %s = $1", col, col)
+	queryString := fmt.Sprintf(`SELECT id, email, passwordHash, otpSecret, phone, 
+	EXTRACT(EPOCH FROM createdAt)::bigint, 
+	EXTRACT(EPOCH FROM updatedAt)::bigint 
+FROM users WHERE %s = $1`, col)
 	fmt.Println(queryString)
-	err := db.QueryRow(queryString, id).Scan(&id)
+
+	var user model.User
+	err := db.QueryRow(queryString, identifier).Scan(&user.ID, &user.Email, &user.Password, &user.Otp, &user.Phone, &user.CreatedAt, &user.UpdatedAt)
 	switch {
 	case err == sql.ErrNoRows:
-		return false
+		return model.User{}, fmt.Errorf("no user found")
 	case err != nil:
 		log.Fatal(err)
-		return false
+		return model.User{}, fmt.Errorf("no user found")
 	default:
-		return true
+		fmt.Println(user)
+		return user, nil
 	}
 }
 
 func UpdateUser(input model.User) (*model.User, error) {
 	// check if user with given id exists
-	if !CheckIfUserExists(input.ID) {
+	_, err := FindUser(input.ID)
+	if err != nil {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
 
