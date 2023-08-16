@@ -36,6 +36,6 @@
 	"dependencies": {
 		"@kitql/client": "^0.5.12",
 		"@sentry/sveltekit": "^7.64.0",
-		"graphql": "^16.7.1"
+		"graphql": "^16.8.0"
 	}
 }
