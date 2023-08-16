@@ -5,4 +5,5 @@ RUN npm ci
 COPY . .
 EXPOSE 3000
 ENV NODE_ENV=development
-CMD npm run dev
+RUN apk add --no-cache bash && which bash
+CMD ./wait.sh backend:8888 -- npm run dev

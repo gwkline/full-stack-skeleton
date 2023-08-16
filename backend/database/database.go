@@ -94,7 +94,8 @@ func IsDirEmpty(dir string) (bool, error) {
 func RunMigrations() {
 	isEmpty, err := IsDirEmpty("./database/migrations")
 	if err != nil {
-		log.Fatalf("Failed to check directory: %v", err)
+		log.Fatalf("Failed to check directory (maybe missing): %v", err)
+		return
 	}
 
 	if isEmpty {
