@@ -18,4 +18,4 @@ COPY --from=builder /app ./
 # Set Gin to release mode for testing
 ENV GIN_MODE=release
 
-CMD go test -coverprofile=coverage.out
+CMD go test ./... -coverprofile=coverage.out
