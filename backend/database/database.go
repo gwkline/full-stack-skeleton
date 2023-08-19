@@ -223,7 +223,7 @@ FROM users WHERE %s = $1`, col)
 	fmt.Println(queryString)
 
 	var user model.User
-	err := db.QueryRow(queryString, identifier).Scan(&user.ID, &user.Email, &user.Password, &user.Otp, &user.Phone, &user.CreatedAt, &user.UpdatedAt)
+	err := db.QueryRow(queryString, identifier).Scan(&user.ID, &user.Email, &user.Password, &user.OtpSecret, &user.Phone, &user.CreatedAt, &user.UpdatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return model.User{}, fmt.Errorf("no user found")

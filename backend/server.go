@@ -71,21 +71,24 @@ func SetupRouter(env string) *gin.Engine {
 	// Expose schema for introspection
 	// TODO: Add authorization here
 	router.StaticFile("/schema.graphqls", "./graph/schema.graphqls")
-	router.GET("/", playgroundHandler())
 
-	// GraphQL Endpoint
+	router.GET("/", playgroundHandler())
 	router.POST("/graphql", graphqlHandler())
-	router.POST("/login", func(c *gin.Context) {
+
+	router.POST("/auth/login", func(c *gin.Context) {
 		auth.LoginHandler(c)
 	})
-	router.POST("/signup", func(c *gin.Context) {
+	router.POST("/auth/signup", func(c *gin.Context) {
 		auth.SignupHandler(c)
 	})
-	router.GET("/auth/google", auth.HandleGoogleAuth)
-	router.GET("/auth/google/callback", auth.HandleGoogleCallback)
-	router.POST("/refresh", func(c *gin.Context) {
+	router.POST("/auth/add2fa", func(c *gin.Context) {
+		auth.Add2FA(c)
+	})
+	router.POST("/auth/refresh", func(c *gin.Context) {
 		auth.RefreshTokenHandler(c)
 	})
+	// router.GET("/auth/google", auth.HandleGoogleAuth)
+	// router.GET("/auth/google/callback", auth.HandleGoogleCallback)
 
 	return router
 }
