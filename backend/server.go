@@ -25,19 +25,19 @@ type Config struct {
 }
 
 func main() {
-	cfg := LoadConfig()
+	cfg := loadConfig()
 
-	InitSentry(cfg.SentryDSN)
+	initSentry(cfg.SentryDSN)
 
 	if cfg.Env == "production" || cfg.Env == "development" {
 		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
 	}
 
-	router := SetupRouter(cfg.Env)
+	router := setupRouter(cfg.Env)
 	router.Run(":" + cfg.Port)
 }
 
-func SetupRouter(env string) *gin.Engine {
+func setupRouter(env string) *gin.Engine {
 
 	// Router config fun
 	router := gin.New()
@@ -93,7 +93,7 @@ func SetupRouter(env string) *gin.Engine {
 	return router
 }
 
-func InitSentry(dsn string) bool {
+func initSentry(dsn string) bool {
 	// Sentry Initialization
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              dsn,
@@ -129,7 +129,7 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
-func LoadConfig() Config {
+func loadConfig() Config {
 	return Config{
 		Port:             getEnv("PORT", defaultPort),
 		Env:              os.Getenv("ENV"),

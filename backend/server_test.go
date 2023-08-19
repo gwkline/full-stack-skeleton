@@ -48,7 +48,7 @@ func TestGetEnv(t *testing.T) {
 
 func TestInitSentry(t *testing.T) {
 	// Init Sentry
-	res := InitSentry("https://sentry.io/")
+	res := initSentry("https://sentry.io/")
 	if res != true && res != false {
 		t.Errorf("Expected true, got false")
 	}
@@ -81,7 +81,7 @@ func TestLoadConfig(t *testing.T) {
 		SentryDSN:        "https://sentry.io/",
 	}
 
-	config := LoadConfig()
+	config := loadConfig()
 	if config != expectedConfig {
 		t.Errorf("Expected %+v, got %+v", expectedConfig, config)
 	}
@@ -101,7 +101,7 @@ func TestSetupRouter(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		r := SetupRouter(tt.env)
+		r := setupRouter(tt.env)
 
 		req, _ := http.NewRequest("OPTIONS", "/graphql", nil)
 
