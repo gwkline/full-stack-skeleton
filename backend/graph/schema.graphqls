@@ -13,7 +13,7 @@ type User {
   id: ID!
   email: String!
   password: String!
-  otp: String
+  otpSecret: String
   phone: String
   createdAt: Int!
   updatedAt: Int!

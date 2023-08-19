@@ -66,7 +66,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		Email     func(childComplexity int) int
 		ID        func(childComplexity int) int
-		Otp       func(childComplexity int) int
+		OtpSecret func(childComplexity int) int
 		Password  func(childComplexity int) int
 		Phone     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
@@ -174,12 +174,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.ID(childComplexity), true
 
-	case "User.otp":
-		if e.complexity.User.Otp == nil {
+	case "User.otpSecret":
+		if e.complexity.User.OtpSecret == nil {
 			break
 		}
 
-		return e.complexity.User.Otp(childComplexity), true
+		return e.complexity.User.OtpSecret(childComplexity), true
 
 	case "User.password":
 		if e.complexity.User.Password == nil {
@@ -560,8 +560,8 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "otp":
-				return ec.fieldContext_User_otp(ctx, field)
+			case "otpSecret":
+				return ec.fieldContext_User_otpSecret(ctx, field)
 			case "phone":
 				return ec.fieldContext_User_phone(ctx, field)
 			case "createdAt":
@@ -881,8 +881,8 @@ func (ec *executionContext) fieldContext_Todo_user(ctx context.Context, field gr
 				return ec.fieldContext_User_email(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
-			case "otp":
-				return ec.fieldContext_User_otp(ctx, field)
+			case "otpSecret":
+				return ec.fieldContext_User_otpSecret(ctx, field)
 			case "phone":
 				return ec.fieldContext_User_phone(ctx, field)
 			case "createdAt":
@@ -1028,8 +1028,8 @@ func (ec *executionContext) fieldContext_User_password(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _User_otp(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_User_otp(ctx, field)
+func (ec *executionContext) _User_otpSecret(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_otpSecret(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1042,7 +1042,7 @@ func (ec *executionContext) _User_otp(ctx context.Context, field graphql.Collect
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Otp, nil
+		return obj.OtpSecret, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1056,7 +1056,7 @@ func (ec *executionContext) _User_otp(ctx context.Context, field graphql.Collect
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_User_otp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_User_otpSecret(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -3327,8 +3327,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "otp":
-			out.Values[i] = ec._User_otp(ctx, field, obj)
+		case "otpSecret":
+			out.Values[i] = ec._User_otpSecret(ctx, field, obj)
 		case "phone":
 			out.Values[i] = ec._User_phone(ctx, field, obj)
 		case "createdAt":
