@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/gwkline/full-stack-infra/backend/graph/model"
+	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 )
 
 // CreateTodo is the resolver for the createTodo field.

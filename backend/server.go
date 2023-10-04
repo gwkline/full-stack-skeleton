@@ -10,9 +10,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/getsentry/sentry-go"
 	sentrygin "github.com/getsentry/sentry-go/gin"
-	"github.com/gwkline/full-stack-infra/backend/database"
-	"github.com/gwkline/full-stack-infra/backend/graph"
-	"github.com/gwkline/full-stack-infra/backend/services/auth"
+	"github.com/gwkline/full-stack-infra/backend/internal/database"
+	"github.com/gwkline/full-stack-infra/backend/internal/graph"
+	"github.com/gwkline/full-stack-infra/backend/internal/services/auth"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

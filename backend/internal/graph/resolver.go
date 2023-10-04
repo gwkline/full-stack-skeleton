@@ -1,6 +1,6 @@
 package graph
 
-import "github.com/gwkline/full-stack-infra/backend/graph/model"
+import "github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 
 // This file will not be regenerated automatically.
 //
