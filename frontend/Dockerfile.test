@@ -1,16 +1,16 @@
-FROM node:current-alpine AS builder
+FROM oven/bun:alpine AS builder
 WORKDIR /app
 COPY package*.json .
-RUN npm ci
+RUN bun install
 COPY . .
-RUN npm run build
-RUN npm prune --production
+RUN bun run build
+RUN bun prune --production
 
-FROM node:current-alpine
+FROM oven/bun:alpine
 WORKDIR /app
 COPY --from=builder /app/build build/
 COPY --from=builder /app/node_modules node_modules/
 COPY package.json .
 EXPOSE 3000
 ENV NODE_ENV=production
-CMD node build
+CMD bun build

@@ -1,9 +1,10 @@
-FROM node:current-alpine
+FROM oven/bun:alpine
 WORKDIR /app
 COPY package*.json .
-RUN npm ci
+RUN bun install
 COPY . .
 EXPOSE 3000
 ENV NODE_ENV=development
 RUN apk add --no-cache bash && which bash
-CMD ./wait.sh backend:8888 -- npm run dev
+RUN apk add --no-cache dos2unix && dos2unix ./wait.sh
+CMD ./wait.sh backend:8888 -- bun --watch run dev
