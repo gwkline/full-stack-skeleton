@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -86,7 +85,6 @@ func SignupHandler(c *gin.Context, database *database.Database) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}
-
 	_, err = database.FindUser(newUser.Email, "email")
 	if err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
@@ -101,7 +99,6 @@ func SignupHandler(c *gin.Context, database *database.Database) {
 
 	_, err = database.InsertUser(newUser)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating user"})
 		return
 	}
