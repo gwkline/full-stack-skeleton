@@ -31,7 +31,7 @@ func SignupHandler(c *gin.Context, database *database.Database) {
 
 	_, err = database.InsertUser(newUser)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return
 	}
 

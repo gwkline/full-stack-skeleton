@@ -41,3 +41,48 @@ func TestSignupHandler(t *testing.T) {
 	SignupHandler(ctx, db)
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }
+
+func TestSignupHandler_JSONBindingError(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	helpers.MockJsonPost(ctx, "{this_is_invalid_json}")
+
+	SignupHandler(ctx, nil)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Bad request")
+}
+
+func TestSignupHandler_EmptyEmailPassword(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	body := model.NewUser{Email: "", Password: ""}
+	helpers.MockJsonPost(ctx, body)
+
+	SignupHandler(ctx, nil)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Bad request")
+}
+
+func TestSignupHandler_DatabaseInsertionError(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	db, mock := helpers.MockDB()
+	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+    EXTRACT(EPOCH FROM createdAt)::bigint,
+    EXTRACT(EPOCH FROM updatedAt)::bigint
+    FROM users WHERE email = $1`)
+	mock.ExpectQuery(findUserSQL).
+		WithArgs("email@gmail.com").
+		WillReturnError(sql.ErrNoRows)
+
+	mock.ExpectExec(`INSERT`).WillReturnError(sql.ErrConnDone)
+
+	body := model.NewUser{Email: "email@gmail.com", Password: "password123"}
+	helpers.MockJsonPost(ctx, body)
+
+	SignupHandler(ctx, db)
+	assert.EqualValues(t, http.StatusInternalServerError, w.Code)
+}
