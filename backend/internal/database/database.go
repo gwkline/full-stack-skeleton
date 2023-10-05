@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gwkline/full-stack-infra/backend/graph/model"
+	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 
 	//Postgresql driver
 

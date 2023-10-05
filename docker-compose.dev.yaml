@@ -2,7 +2,7 @@ version: "3"
 services:
   database:
     build:
-      context: ./backend/database
+      context: ./backend/internal/database
       dockerfile: Dockerfile.prod
     ports:
       - "5432:5432"
@@ -26,7 +26,7 @@ services:
       - .env
     # volumes:
     #   - ./backend:/app
-    x-develop:
+    develop:
       watch:
         - action: rebuild
           path: ./backend

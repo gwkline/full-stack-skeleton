@@ -114,14 +114,14 @@ docker-compose -f docker-compose.dev.yaml up -d --build && docker-compose -f doc
 _Backend_
 
 2. Create/update a service or resource in `./backend`, including any business logic
-3. In `./backend/graph`, edit your `schema.graphqls` to define this service/resource using GraphQL
+3. In `./backend/internal/graph`, edit your `schema.graphqls` to define this service/resource using GraphQL
 4. Run the following command in `./backend` to regenerate any dependent models, types, or resolvers:
 
 ```bash
 go run github.com/99designs/gqlgen generate
 ```
 
-5. Back in `./backend/graph`, update your `schema.resolvers.go` to expose the finished service/resource
+5. Back in `./backend/internal/graph`, update your `schema.resolvers.go` to expose the finished service/resource
 6. Write unit test(s) to verify your logic and attempt to prevent future bugs
 
 _Frontend_
@@ -174,7 +174,7 @@ Right now testing is only supported through unit tests on the Go backend. There 
 Or you can use the pre-configured testing Docker flow
 
 ```bash
-docker build -f ./backend/Dockerfile.test -t backend-tester ./backend && docker run --name backend-tester backend-tester && docker rm backend-tester
+docker build -f ./backend/internal/Dockerfile.test -t backend-tester ./backend && docker run --name backend-tester backend-tester && docker rm backend-tester
 ```
 
 ---
