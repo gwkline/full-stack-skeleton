@@ -53,13 +53,6 @@ func TestLoginHandler(t *testing.T) {
 func TestSignupHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := helpers.TestGinContext(w)
-
-	// hashedPW, _ := hashPassword("new_password")
-	// newUser := model.NewUser{
-	// 	Email:    "new_email@gmail.com",
-	// 	Password: hashedPW,
-	// }
-
 	db, mock := helpers.MockDB()
 
 	var body model.NewUser
@@ -68,7 +61,6 @@ func TestSignupHandler(t *testing.T) {
 
 	helpers.MockJsonPost(ctx, body)
 
-	// Mock database query for finding user
 	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
     EXTRACT(EPOCH FROM createdAt)::bigint,
     EXTRACT(EPOCH FROM updatedAt)::bigint
@@ -77,7 +69,6 @@ func TestSignupHandler(t *testing.T) {
 		WithArgs("new_email@gmail.com").
 		WillReturnError(sql.ErrNoRows) // simulating that user doesn't exist
 
-	// Mock database query for inserting user
 	insertUserSQL := regexp.QuoteMeta(`INSERT INTO users (email, passwordHash, otpSecret, phone, createdAt, updatedAt) VALUES($1, $2, $3, $4, TIMESTAMP 'epoch' + $5 * INTERVAL '1 second', TIMESTAMP 'epoch' + $6 * INTERVAL '1 second') RETURNING id;`)
 
 	mock.ExpectPrepare(insertUserSQL).ExpectQuery().
@@ -87,6 +78,49 @@ func TestSignupHandler(t *testing.T) {
 	SignupHandler(ctx, db)
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }
+
+func Test2FAHandler(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+	db, mock := helpers.MockDB()
+
+	var body model.NewUser
+	body.Email = "new_email@gmail.com"
+	body.Password = "new_password"
+
+	hashedPW, _ := hashPassword("password123")
+
+	helpers.MockJsonPost(ctx, body)
+
+	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+    EXTRACT(EPOCH FROM createdAt)::bigint,
+    EXTRACT(EPOCH FROM updatedAt)::bigint
+    FROM users WHERE email = $1`)
+	mock.ExpectQuery(findUserSQL).
+		WithArgs("new_email@gmail.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
+			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
+
+	findUserSQL2 := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+			EXTRACT(EPOCH FROM createdAt)::bigint,
+			EXTRACT(EPOCH FROM updatedAt)::bigint
+			FROM users WHERE id = $1`)
+	mock.ExpectQuery(findUserSQL2).
+		WithArgs("1").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
+			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
+
+	insertUserSQL := regexp.QuoteMeta(`UPDATE users SET email = $1, phone = $2, otpSecret = $3, updatedAt = NOW() WHERE id = $4 RETURNING createdAt;`)
+
+	mock.ExpectPrepare(insertUserSQL).ExpectQuery().
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"createdAt"}).
+			AddRow(time.Now()))
+
+	Add2FA(ctx, db)
+	assert.EqualValues(t, http.StatusOK, w.Code)
+}
+
 func TestGenerateToken(t *testing.T) {
 	email := "test@example.com"
 	token, err := generateToken(email, AccessTokenDuration)

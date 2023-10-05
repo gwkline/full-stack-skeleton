@@ -121,10 +121,14 @@ func Add2FA(c *gin.Context, database *database.Database) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}
-
 	user, err := database.FindUser(login.Email, "email")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return
+	}
+
+	if user.OtpSecret != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "2FA already enabled"})
 		return
 	}
 

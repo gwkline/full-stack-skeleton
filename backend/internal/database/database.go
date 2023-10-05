@@ -135,7 +135,7 @@ func (d *Database) InsertUser(input model.NewUser) (*model.User, error) {
 		return nil, err
 	}
 
-	currentTime := int(time.Now().Unix())
+	currentTime := int(time.Now().UnixMilli())
 
 	var id int
 	err = stmt.QueryRow(input.Email, input.Password, input.Otp, input.Phone, currentTime, currentTime).Scan(&id)
@@ -245,24 +245,26 @@ func (d *Database) UpdateUser(input model.User) (*model.User, error) {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
 
-	stmt, err := d.Conn.Prepare(`UPDATE users SET email = $1, phone = $2, updatedAt = $3 WHERE id = $4 RETURNING createdAt;`)
+	stmt, err := d.Conn.Prepare(`UPDATE users SET email = $1, phone = $2, otpSecret = $3, updatedAt = NOW() WHERE id = $4 RETURNING createdAt;`)
 	if err != nil {
 		return nil, err
 	}
 
-	var createdAt int
+	var createdAt time.Time
 	currentTime := int(time.Now().Unix())
 
-	err = stmt.QueryRow(input.Email, input.Phone, currentTime, input.ID).Scan(&createdAt)
+	err = stmt.QueryRow(input.Email, input.Phone, input.OtpSecret, input.ID).Scan(&createdAt)
 	if err != nil {
 		return nil, err
 	}
+
+	intCreatedAt := int(createdAt.UnixMilli())
 
 	user := model.User{
 		ID:        input.ID,
 		Email:     input.Email,
 		Phone:     input.Phone,
-		CreatedAt: createdAt,
+		CreatedAt: intCreatedAt,
 		UpdatedAt: currentTime,
 	}
 
