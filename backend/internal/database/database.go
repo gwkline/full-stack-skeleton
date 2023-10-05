@@ -53,7 +53,6 @@ func InitDB(user, password, dbname string) *Database {
 	db.RunMigrations()
 	log.Println("Connected to the database")
 
-	defer db.Conn.Close()
 	return db
 }
 
@@ -235,7 +234,6 @@ FROM users WHERE %s = $1`, col)
 		log.Fatal(err)
 		return model.User{}, fmt.Errorf("no user found")
 	default:
-		fmt.Println(user)
 		return user, nil
 	}
 }
