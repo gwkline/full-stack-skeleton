@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -49,7 +50,43 @@ func TestLoginHandler(t *testing.T) {
 
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }
+func TestSignupHandler(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
 
+	// hashedPW, _ := hashPassword("new_password")
+	// newUser := model.NewUser{
+	// 	Email:    "new_email@gmail.com",
+	// 	Password: hashedPW,
+	// }
+
+	db, mock := helpers.MockDB()
+
+	var body model.NewUser
+	body.Email = "new_email@gmail.com"
+	body.Password = "new_password"
+
+	helpers.MockJsonPost(ctx, body)
+
+	// Mock database query for finding user
+	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+    EXTRACT(EPOCH FROM createdAt)::bigint,
+    EXTRACT(EPOCH FROM updatedAt)::bigint
+    FROM users WHERE email = $1`)
+	mock.ExpectQuery(findUserSQL).
+		WithArgs("new_email@gmail.com").
+		WillReturnError(sql.ErrNoRows) // simulating that user doesn't exist
+
+	// Mock database query for inserting user
+	insertUserSQL := regexp.QuoteMeta(`INSERT INTO users (email, passwordHash, otpSecret, phone, createdAt, updatedAt) VALUES($1, $2, $3, $4, TIMESTAMP 'epoch' + $5 * INTERVAL '1 second', TIMESTAMP 'epoch' + $6 * INTERVAL '1 second') RETURNING id;`)
+
+	mock.ExpectPrepare(insertUserSQL).ExpectQuery().
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
+
+	SignupHandler(ctx, db)
+	assert.EqualValues(t, http.StatusOK, w.Code)
+}
 func TestGenerateToken(t *testing.T) {
 	email := "test@example.com"
 	token, err := generateToken(email, AccessTokenDuration)
