@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
+	"github.com/gwkline/full-stack-infra/backend/internal/services/helpers"
 )
 
 func TestMain(m *testing.M) {

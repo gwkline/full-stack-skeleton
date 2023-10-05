@@ -10,7 +10,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
-	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
+	"github.com/gwkline/full-stack-infra/backend/internal/services/helpers"
 	"github.com/stretchr/testify/assert"
 )
 
