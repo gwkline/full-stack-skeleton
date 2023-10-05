@@ -25,3 +25,14 @@ func TestRefreshTokenHandler(t *testing.T) {
 	RefreshTokenHandler(ctx, db)
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }
+
+func TestRefreshTokenHandler_JSONBindingError(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	helpers.MockJsonPost(ctx, "{this_is_invalid_json}")
+
+	RefreshTokenHandler(ctx, nil)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Bad request")
+}

@@ -9,19 +9,13 @@ import (
 )
 
 func RefreshTokenHandler(c *gin.Context, database *database.Database) {
-	var data map[string]string
+	var data JWT
 	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}
 
-	refreshToken, ok := data["refresh_token"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
-		return
-	}
-
-	claims, err := validateToken(refreshToken)
+	claims, err := validateToken(data.RefreshToken)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return

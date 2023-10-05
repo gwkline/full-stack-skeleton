@@ -34,6 +34,11 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+type JWT struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 func generateToken(email string, duration time.Duration) (string, error) {
 	claims := Claims{
 		Email: email,

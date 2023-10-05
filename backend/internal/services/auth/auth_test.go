@@ -8,11 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type JWT struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
-}
-
 func TestGenerateToken(t *testing.T) {
 	email := "test@example.com"
 	token, err := generateToken(email, AccessTokenDuration)
