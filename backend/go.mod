@@ -3,9 +3,9 @@ module github.com/gwkline/full-stack-infra/backend
 go 1.21
 
 require (
-	github.com/99designs/gqlgen v0.17.36
+	github.com/99designs/gqlgen v0.17.38
 	github.com/badoux/checkmail v1.2.1
-	github.com/getsentry/sentry-go v0.23.0
+	github.com/getsentry/sentry-go v0.24.1
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -13,8 +13,8 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/pquerna/otp v1.4.0
 	github.com/stretchr/testify v1.8.4
-	github.com/vektah/gqlparser/v2 v2.5.8
-	golang.org/x/crypto v0.12.0
+	github.com/vektah/gqlparser/v2 v2.5.10
+	golang.org/x/crypto v0.13.0
 )
 
 require (
@@ -30,6 +30,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -52,8 +53,8 @@ require (
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
-	golang.org/x/sys v0.11.0 // indirect
-	golang.org/x/text v0.12.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
+	golang.org/x/text v0.13.0 // indirect
 	golang.org/x/tools v0.9.3 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
