@@ -92,7 +92,7 @@ func IsDirEmpty(dir string) (bool, error) {
 }
 
 func RunMigrations() {
-	isEmpty, err := IsDirEmpty("./database/migrations")
+	isEmpty, err := IsDirEmpty("./internal/database/migrations")
 	if err != nil {
 		log.Fatalf("Failed to check directory (maybe missing): %v", err)
 		return
@@ -104,7 +104,7 @@ func RunMigrations() {
 	}
 	driver, _ := postgres.WithInstance(db, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://./database/migrations",
+		"file://./internal/database/migrations",
 		"postgres", driver)
 
 	if err != nil {

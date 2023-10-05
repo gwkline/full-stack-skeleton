@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gwkline/full-stack-infra/backend/database"
-	"github.com/gwkline/full-stack-infra/backend/graph/model"
-	"github.com/gwkline/full-stack-infra/backend/helpers"
+	"github.com/gwkline/full-stack-infra/backend/internal/database"
+	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
+	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 )

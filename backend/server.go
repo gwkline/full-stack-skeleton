@@ -70,7 +70,7 @@ func setupRouter(env string) *gin.Engine {
 
 	// Expose schema for introspection
 	// TODO: Add authorization here
-	router.StaticFile("/schema.graphqls", "./graph/schema.graphqls")
+	router.StaticFile("/schema.graphqls", "./internal/graph/schema.graphqls")
 
 	router.GET("/", playgroundHandler())
 	router.POST("/graphql", graphqlHandler())
