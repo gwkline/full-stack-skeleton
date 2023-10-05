@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -53,4 +54,42 @@ func Test2FAHandler(t *testing.T) {
 
 	Add2FA(ctx, db)
 	assert.EqualValues(t, http.StatusOK, w.Code)
+}
+
+func TestAdd2FA_JSONBindingError(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	helpers.MockJsonPost(ctx, "{this_is_invalid_json}")
+
+	Add2FA(ctx, nil)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Bad request")
+}
+
+func TestAdd2FA_EmptyEmailPassword(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	body := Login{Email: "", Password: ""}
+	helpers.MockJsonPost(ctx, body)
+
+	Add2FA(ctx, nil)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "Bad request")
+}
+
+func TestAdd2FA_UserNotFound(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+
+	db, mock := helpers.MockDB()
+	mock.ExpectQuery(`SELECT`).WillReturnError(sql.ErrNoRows)
+
+	body := Login{Email: "email@gmail.com", Password: "password123"}
+	helpers.MockJsonPost(ctx, body)
+
+	Add2FA(ctx, db)
+	assert.EqualValues(t, http.StatusBadRequest, w.Code)
+	assert.Contains(t, w.Body.String(), "User not found")
 }
