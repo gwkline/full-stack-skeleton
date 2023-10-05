@@ -1,6 +1,7 @@
 package graph
 
-import "github.com/gwkline/full-stack-infra/backend/graph/model"
+//go:generate go run github.com/99designs/gqlgen generate
+import "github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 
 //go:generate go run github.com/99designs/gqlgen generate
 

@@ -8,8 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/gwkline/full-stack-infra/backend/database"
-	"github.com/gwkline/full-stack-infra/backend/graph/model"
+	"github.com/gwkline/full-stack-infra/backend/internal/database"
+	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
