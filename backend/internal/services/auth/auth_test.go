@@ -1,145 +1,16 @@
 package auth
 
 import (
-	"database/sql"
-	"net/http"
-	"net/http/httptest"
-	"regexp"
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
-
-	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
-	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLoginHandler(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := helpers.TestGinContext(w)
-
-	hashedPW, _ := hashPassword("password123")
-	testUser := model.NewUser{
-		Email:    "email@gmail.com",
-		Password: hashedPW,
-	}
-
-	db, mock := helpers.MockDB()
-	db.InsertUser(testUser)
-
-	var body Login
-	body.Email = "email@gmail.com"
-	body.Password = "password123"
-	body.OTP = ""
-
-	helpers.MockJsonPost(ctx, body)
-
-	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone, 
-    EXTRACT(EPOCH FROM createdAt)::bigint, 
-    EXTRACT(EPOCH FROM updatedAt)::bigint 
-    FROM users WHERE email = $1`)
-
-	mock.ExpectQuery(findUserSQL).
-		WithArgs("email@gmail.com").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
-			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
-
-	LoginHandler(ctx, db)
-
-	assert.EqualValues(t, http.StatusOK, w.Code)
-}
-func TestSignupHandler(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := helpers.TestGinContext(w)
-	db, mock := helpers.MockDB()
-
-	var body model.NewUser
-	body.Email = "new_email@gmail.com"
-	body.Password = "new_password"
-
-	helpers.MockJsonPost(ctx, body)
-
-	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
-    EXTRACT(EPOCH FROM createdAt)::bigint,
-    EXTRACT(EPOCH FROM updatedAt)::bigint
-    FROM users WHERE email = $1`)
-	mock.ExpectQuery(findUserSQL).
-		WithArgs("new_email@gmail.com").
-		WillReturnError(sql.ErrNoRows) // simulating that user doesn't exist
-
-	insertUserSQL := regexp.QuoteMeta(`INSERT INTO users (email, passwordHash, otpSecret, phone, createdAt, updatedAt) VALUES($1, $2, $3, $4, TIMESTAMP 'epoch' + $5 * INTERVAL '1 second', TIMESTAMP 'epoch' + $6 * INTERVAL '1 second') RETURNING id;`)
-
-	mock.ExpectPrepare(insertUserSQL).ExpectQuery().
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-
-	SignupHandler(ctx, db)
-	assert.EqualValues(t, http.StatusOK, w.Code)
-}
-
-func Test2FAHandler(t *testing.T) {
-	w := httptest.NewRecorder()
-	ctx := helpers.TestGinContext(w)
-	db, mock := helpers.MockDB()
-
-	var body model.NewUser
-	body.Email = "new_email@gmail.com"
-	body.Password = "new_password"
-
-	hashedPW, _ := hashPassword("password123")
-
-	helpers.MockJsonPost(ctx, body)
-
-	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
-    EXTRACT(EPOCH FROM createdAt)::bigint,
-    EXTRACT(EPOCH FROM updatedAt)::bigint
-    FROM users WHERE email = $1`)
-	mock.ExpectQuery(findUserSQL).
-		WithArgs("new_email@gmail.com").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
-			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
-
-	findUserSQL2 := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
-			EXTRACT(EPOCH FROM createdAt)::bigint,
-			EXTRACT(EPOCH FROM updatedAt)::bigint
-			FROM users WHERE id = $1`)
-	mock.ExpectQuery(findUserSQL2).
-		WithArgs("1").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
-			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
-
-	insertUserSQL := regexp.QuoteMeta(`UPDATE users SET email = $1, phone = $2, otpSecret = $3, updatedAt = NOW() WHERE id = $4 RETURNING createdAt;`)
-
-	mock.ExpectPrepare(insertUserSQL).ExpectQuery().
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"createdAt"}).
-			AddRow(time.Now()))
-
-	Add2FA(ctx, db)
-	assert.EqualValues(t, http.StatusOK, w.Code)
-}
-
 type JWT struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
-}
-
-func TestRefreshTokenHandler(t *testing.T) {
-
-	w := httptest.NewRecorder()
-	ctx := helpers.TestGinContext(w)
-	db, _ := helpers.MockDB()
-
-	var body JWT
-	body.AccessToken, _ = generateToken("email@gmail.com", time.Second*1)
-	body.RefreshToken, _ = generateToken("email@gmail.com", time.Hour*1)
-
-	helpers.MockJsonPost(ctx, body)
-
-	RefreshTokenHandler(ctx, db)
-	assert.EqualValues(t, http.StatusOK, w.Code)
 }
 
 func TestGenerateToken(t *testing.T) {

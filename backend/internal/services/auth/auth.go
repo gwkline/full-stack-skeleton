@@ -1,14 +1,10 @@
 package auth
 
 import (
-	"net/http"
 	"os"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
-	"github.com/gwkline/full-stack-infra/backend/internal/database"
-	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 	"github.com/pquerna/otp"
 	"github.com/pquerna/otp/totp"
 	"golang.org/x/crypto/bcrypt"
@@ -36,144 +32,6 @@ type Login struct {
 type Claims struct {
 	Email string `json:"email"`
 	jwt.StandardClaims
-}
-
-func LoginHandler(c *gin.Context, db *database.Database) {
-	var login Login
-
-	// Bind JSON body to struct
-	err := c.BindJSON(&login)
-	if err != nil || login.Email == "" || login.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
-		return
-	}
-
-	user, err := db.FindUser(login.Email, "email")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
-		return
-	}
-
-	if user.OtpSecret != nil {
-		if !validOtpCode(*user.OtpSecret, login.OTP) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP"})
-			return
-		}
-	}
-
-	if !validPassword(login.Password, user.Password) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
-		return
-	}
-
-	// Generate JWT tokens
-	accessToken, _ := generateToken(login.Email, AccessTokenDuration)
-	refreshToken, _ := generateToken(login.Email, RefreshTokenDuration)
-
-	c.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
-}
-
-func SignupHandler(c *gin.Context, database *database.Database) {
-	var newUser model.NewUser
-
-	// Bind JSON body to struct
-	err := c.BindJSON(&newUser)
-	if err != nil || newUser.Email == "" || newUser.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
-		return
-	}
-	_, err = database.FindUser(newUser.Email, "email")
-	if err == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
-		return
-	}
-
-	newUser.Password, err = hashPassword(newUser.Password)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error hashing password"})
-		return
-	}
-
-	_, err = database.InsertUser(newUser)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Error creating user"})
-		return
-	}
-
-	// Generate JWT tokens
-	accessToken, _ := generateToken(newUser.Email, AccessTokenDuration)
-	refreshToken, _ := generateToken(newUser.Email, RefreshTokenDuration)
-
-	c.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
-	})
-}
-
-func Add2FA(c *gin.Context, database *database.Database) {
-	var login Login
-
-	err := c.BindJSON(&login)
-	if err != nil || login.Email == "" || login.Password == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
-		return
-	}
-	user, err := database.FindUser(login.Email, "email")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
-		return
-	}
-
-	if user.OtpSecret != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "2FA already enabled"})
-		return
-	}
-
-	key, err := generateTOTPKey(user.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate TOTP key"})
-	}
-
-	secret := key.Secret()
-	user.OtpSecret = &secret
-
-	_, err = database.UpdateUser(user)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to set key on user"})
-	}
-
-	c.JSON(http.StatusOK, key.URL())
-}
-
-func RefreshTokenHandler(c *gin.Context, database *database.Database) {
-	var data map[string]string
-	if err := c.ShouldBindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	refreshToken, ok := data["refresh_token"]
-	if !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token required"})
-		return
-	}
-
-	claims, err := validateToken(refreshToken)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
-		return
-	}
-
-	if time.Unix(claims.ExpiresAt, 0).Before(time.Now()) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token expired"})
-		return
-	}
-
-	newAccessToken, _ := generateToken(claims.Email, AccessTokenDuration)
-	c.JSON(http.StatusOK, gin.H{"access_token": newAccessToken})
 }
 
 func generateToken(email string, duration time.Duration) (string, error) {
