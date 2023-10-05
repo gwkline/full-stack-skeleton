@@ -93,3 +93,39 @@ func TestAdd2FA_UserNotFound(t *testing.T) {
 	assert.EqualValues(t, http.StatusBadRequest, w.Code)
 	assert.Contains(t, w.Body.String(), "User not found")
 }
+
+func Test2FAHandler_TOTPError(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+	db, mock := helpers.MockDB()
+
+	var body model.NewUser
+	body.Email = "new_email@gmail.com"
+	body.Password = "new_password"
+
+	hashedPW, _ := hashPassword("password123")
+
+	helpers.MockJsonPost(ctx, body)
+
+	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+    EXTRACT(EPOCH FROM createdAt)::bigint,
+    EXTRACT(EPOCH FROM updatedAt)::bigint
+    FROM users WHERE email = $1`)
+	mock.ExpectQuery(findUserSQL).
+		WithArgs("new_email@gmail.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
+			AddRow(1, "e", hashedPW, nil, "phone", 1633429591, 1633429591))
+
+	findUserSQL2 := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone,
+			EXTRACT(EPOCH FROM createdAt)::bigint,
+			EXTRACT(EPOCH FROM updatedAt)::bigint
+			FROM users WHERE id = $1`)
+	mock.ExpectQuery(findUserSQL2).
+		WithArgs("1").
+		WillReturnError(sql.ErrNoRows)
+
+	Add2FA(ctx, db)
+	assert.EqualValues(t, http.StatusInternalServerError, w.Code)
+	assert.Contains(t, w.Body.String(), "Failed to set key on user")
+
+}

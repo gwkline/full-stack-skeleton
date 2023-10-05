@@ -26,11 +26,7 @@ func Add2FA(c *gin.Context, database *database.Database) {
 		return
 	}
 
-	key, err := generateTOTPKey(user.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate TOTP key"})
-	}
-
+	key, _ := generateTOTPKey(user.Email)
 	secret := key.Secret()
 	user.OtpSecret = &secret
 
