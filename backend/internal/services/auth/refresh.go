@@ -21,6 +21,12 @@ func RefreshTokenHandler(c *gin.Context, database *database.Database) {
 		return
 	}
 
+	claims2, _ := validateToken(data.AccessToken)
+	if claims.Email != claims2.Email {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		return
+	}
+
 	if time.Unix(claims.ExpiresAt, 0).Before(time.Now()) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token expired"})
 		return
