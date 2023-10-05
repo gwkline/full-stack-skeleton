@@ -1,5 +1,6 @@
 package graph
 
+//go:generate go run github.com/99designs/gqlgen generate
 import "github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 
 // This file will not be regenerated automatically.
@@ -8,5 +9,4 @@ import "github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 
 type Resolver struct {
 	todos []*model.Todo
-	users []*model.User
 }
