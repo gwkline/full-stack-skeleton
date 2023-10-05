@@ -137,7 +137,6 @@ func InsertUser(input model.NewUser) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	user := model.User{
 		ID:        strconv.Itoa(id),
 		Email:     input.Email,

@@ -1,12 +1,43 @@
 package auth
 
 import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
+	"github.com/gwkline/full-stack-infra/backend/database"
+	"github.com/gwkline/full-stack-infra/backend/graph/model"
+	"github.com/gwkline/full-stack-infra/backend/helpers"
 	"github.com/pquerna/otp/totp"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestLoginHandler(t *testing.T) {
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+	fmt.Println("oof")
+
+	hashedPW, _ := hashPassword("password123")
+	testUser := model.NewUser{
+		Email:    "email@gmail.com",
+		Password: hashedPW,
+	}
+
+	database.InsertUser(testUser)
+
+	var body Login
+	body.Email = "email@gmail.com"
+	body.Password = "password123"
+	body.OTP = ""
+
+	helpers.MockJsonPost(ctx, body)
+
+	LoginHandler(ctx)
+
+	assert.EqualValues(t, http.StatusOK, w.Code)
+}
 
 func TestGenerateToken(t *testing.T) {
 	email := "test@example.com"
