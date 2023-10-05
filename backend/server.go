@@ -25,19 +25,20 @@ type Config struct {
 }
 
 func main() {
-	cfg := LoadConfig()
+	cfg := loadConfig()
 
-	InitSentry(cfg.SentryDSN)
+	initSentry(cfg.SentryDSN)
 
+	var db *database.Database
 	if cfg.Env == "production" || cfg.Env == "development" {
-		database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
+		db = database.InitDB(cfg.DatabaseUser, cfg.DatabasePassword, cfg.DatabaseName)
 	}
 
-	router := SetupRouter(cfg.Env)
+	router := setupRouter(cfg.Env, db)
 	router.Run(":" + cfg.Port)
 }
 
-func SetupRouter(env string) *gin.Engine {
+func setupRouter(env string, db *database.Database) *gin.Engine {
 
 	// Router config fun
 	router := gin.New()
@@ -70,22 +71,22 @@ func SetupRouter(env string) *gin.Engine {
 
 	// Expose schema for introspection
 	// TODO: Add authorization here
-	router.StaticFile("/schema.graphqls", "./graph/schema.graphqls")
+	router.StaticFile("/schema.graphqls", "./internal/graph/schema.graphqls")
 
 	router.GET("/", playgroundHandler())
 	router.POST("/graphql", graphqlHandler())
 
 	router.POST("/auth/login", func(c *gin.Context) {
-		auth.LoginHandler(c)
+		auth.LoginHandler(c, db)
 	})
 	router.POST("/auth/signup", func(c *gin.Context) {
-		auth.SignupHandler(c)
+		auth.SignupHandler(c, db)
 	})
 	router.POST("/auth/add2fa", func(c *gin.Context) {
-		auth.Add2FA(c)
+		auth.Add2FA(c, db)
 	})
 	router.POST("/auth/refresh", func(c *gin.Context) {
-		auth.RefreshTokenHandler(c)
+		auth.RefreshTokenHandler(c, db)
 	})
 	// router.GET("/auth/google", auth.HandleGoogleAuth)
 	// router.GET("/auth/google/callback", auth.HandleGoogleCallback)
@@ -93,7 +94,7 @@ func SetupRouter(env string) *gin.Engine {
 	return router
 }
 
-func InitSentry(dsn string) bool {
+func initSentry(dsn string) bool {
 	// Sentry Initialization
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              dsn,
@@ -129,7 +130,7 @@ func playgroundHandler() gin.HandlerFunc {
 	}
 }
 
-func LoadConfig() Config {
+func loadConfig() Config {
 	return Config{
 		Port:             getEnv("PORT", defaultPort),
 		Env:              os.Getenv("ENV"),

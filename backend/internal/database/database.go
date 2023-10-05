@@ -19,7 +19,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
+type Database struct {
+	Conn *sql.DB
+}
+
+func NewDatabase(conn *sql.DB) *Database {
+	return &Database{Conn: conn}
+}
 
 const (
 	host          = "database"
@@ -28,37 +34,37 @@ const (
 	retryInterval = 5 * time.Second
 )
 
-func InitDB(user, password, dbname string) {
+func InitDB(user, password, dbname string) *Database {
 	fmt.Println("Initializing database")
 	psqlInfo := fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable", user, password, host, port, dbname)
 	if os.Getenv("ENV") == "development" {
 		fmt.Println(psqlInfo)
 	}
 
-	database, err := waitForDatabase(psqlInfo)
+	db, err := waitForDatabase(psqlInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = database.Ping()
+	err = db.Conn.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	db = database
-	RunMigrations()
+	db.RunMigrations()
 	log.Println("Connected to the database")
+
+	defer db.Conn.Close()
+	return db
 }
 
-func waitForDatabase(psqlInfo string) (*sql.DB, error) {
-	var err error
-
+func waitForDatabase(psqlInfo string) (*Database, error) {
 	fmt.Println("Waiting for database connection")
 
 	for i := 0; i < maxRetries; i++ {
-		db, err = sql.Open("postgres", psqlInfo)
+		dbConn, err := sql.Open("postgres", psqlInfo)
+		db := NewDatabase(dbConn)
 		if err == nil {
-			err = db.Ping()
+			err = db.Conn.Ping()
 			if err == nil {
 				return db, nil
 			}
@@ -91,8 +97,8 @@ func IsDirEmpty(dir string) (bool, error) {
 	return false, err
 }
 
-func RunMigrations() {
-	isEmpty, err := IsDirEmpty("./database/migrations")
+func (d *Database) RunMigrations() {
+	isEmpty, err := IsDirEmpty("./internal/database/migrations")
 	if err != nil {
 		log.Fatalf("Failed to check directory (maybe missing): %v", err)
 		return
@@ -102,9 +108,9 @@ func RunMigrations() {
 		fmt.Println("Directory is empty - skipping migrations")
 		return
 	}
-	driver, _ := postgres.WithInstance(db, &postgres.Config{})
+	driver, _ := postgres.WithInstance(d.Conn, &postgres.Config{})
 	m, err := migrate.NewWithDatabaseInstance(
-		"file://./database/migrations",
+		"file://./internal/database/migrations",
 		"postgres", driver)
 
 	if err != nil {
@@ -120,8 +126,8 @@ func RunMigrations() {
 	}
 }
 
-func InsertUser(input model.NewUser) (*model.User, error) {
-	stmt, err := db.Prepare(`
+func (d *Database) InsertUser(input model.NewUser) (*model.User, error) {
+	stmt, err := d.Conn.Prepare(`
 	INSERT INTO users (email, passwordHash, otpSecret, phone, createdAt, updatedAt) 
 	VALUES($1, $2, $3, $4, TIMESTAMP 'epoch' + $5 * INTERVAL '1 second', TIMESTAMP 'epoch' + $6 * INTERVAL '1 second') 
 	RETURNING id;
@@ -137,7 +143,6 @@ func InsertUser(input model.NewUser) (*model.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	user := model.User{
 		ID:        strconv.Itoa(id),
 		Email:     input.Email,
@@ -149,11 +154,11 @@ func InsertUser(input model.NewUser) (*model.User, error) {
 	return &user, nil
 }
 
-func GetAllUsers() ([]*model.User, error) {
+func (d *Database) GetAllUsers() ([]*model.User, error) {
 
 	var users []*model.User
 
-	rows, err := db.Query(`SELECT * FROM users`)
+	rows, err := d.Conn.Query(`SELECT * FROM users`)
 	if err != nil {
 		return nil, err
 	}
@@ -181,13 +186,13 @@ func GetAllUsers() ([]*model.User, error) {
 	return users, nil
 }
 
-func DeleteUserByID(id string) (*int, error) {
+func (d *Database) DeleteUserByID(id string) (*int, error) {
 	// check if user with given id exists
-	_, err := FindUser(id)
+	_, err := d.FindUser(id)
 	if err != nil {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
-	stmt, err := db.Prepare(`DELETE FROM users WHERE id = $1;`)
+	stmt, err := d.Conn.Prepare(`DELETE FROM users WHERE id = $1;`)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +212,7 @@ func DeleteUserByID(id string) (*int, error) {
 	return &rowsAffected2, nil
 }
 
-func FindUser(identifier string, colName ...string) (model.User, error) {
+func (d *Database) FindUser(identifier string, colName ...string) (model.User, error) {
 
 	var col string
 	if len(colName) > 0 {
@@ -220,10 +225,9 @@ func FindUser(identifier string, colName ...string) (model.User, error) {
 	EXTRACT(EPOCH FROM createdAt)::bigint, 
 	EXTRACT(EPOCH FROM updatedAt)::bigint 
 FROM users WHERE %s = $1`, col)
-	fmt.Println(queryString)
 
 	var user model.User
-	err := db.QueryRow(queryString, identifier).Scan(&user.ID, &user.Email, &user.Password, &user.OtpSecret, &user.Phone, &user.CreatedAt, &user.UpdatedAt)
+	err := d.Conn.QueryRow(queryString, identifier).Scan(&user.ID, &user.Email, &user.Password, &user.OtpSecret, &user.Phone, &user.CreatedAt, &user.UpdatedAt)
 	switch {
 	case err == sql.ErrNoRows:
 		return model.User{}, fmt.Errorf("no user found")
@@ -236,14 +240,14 @@ FROM users WHERE %s = $1`, col)
 	}
 }
 
-func UpdateUser(input model.User) (*model.User, error) {
+func (d *Database) UpdateUser(input model.User) (*model.User, error) {
 	// check if user with given id exists
-	_, err := FindUser(input.ID)
+	_, err := d.FindUser(input.ID)
 	if err != nil {
 		return nil, fmt.Errorf("user with given id does not exists")
 	}
 
-	stmt, err := db.Prepare(`UPDATE users SET email = $1, phone = $2, updatedAt = $3 WHERE id = $4 RETURNING createdAt;`)
+	stmt, err := d.Conn.Prepare(`UPDATE users SET email = $1, phone = $2, updatedAt = $3 WHERE id = $4 RETURNING createdAt;`)
 	if err != nil {
 		return nil, err
 	}
