@@ -4,12 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 
+	"github.com/DATA-DOG/go-sqlmock"
+
 	"github.com/badoux/checkmail"
 	"github.com/gin-gonic/gin"
+	"github.com/gwkline/full-stack-infra/backend/internal/database"
 )
 
 func ValidateEmail(email string) error {
@@ -80,4 +84,15 @@ func MockJsonDelete(c *gin.Context, params gin.Params) {
 	c.Request.Method = "DELETE"
 	c.Request.Header.Set("Content-Type", "application/json")
 	c.Params = params
+}
+
+func MockDB() (*database.Database, sqlmock.Sqlmock) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		log.Fatalf("Failed to create sqlmock: %s", err)
+	}
+
+	// Create your Database instance with the mock connection
+	mockDatabase := database.NewDatabase(db)
+	return mockDatabase, mock
 }

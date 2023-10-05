@@ -1,13 +1,14 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 	"time"
 
-	"github.com/gwkline/full-stack-infra/backend/internal/database"
+	"github.com/DATA-DOG/go-sqlmock"
+
 	"github.com/gwkline/full-stack-infra/backend/internal/graph/model"
 	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
 	"github.com/pquerna/otp/totp"
@@ -17,7 +18,6 @@ import (
 func TestLoginHandler(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx := helpers.TestGinContext(w)
-	fmt.Println("oof")
 
 	hashedPW, _ := hashPassword("password123")
 	testUser := model.NewUser{
@@ -25,7 +25,8 @@ func TestLoginHandler(t *testing.T) {
 		Password: hashedPW,
 	}
 
-	database.InsertUser(testUser)
+	db, mock := helpers.MockDB()
+	db.InsertUser(testUser)
 
 	var body Login
 	body.Email = "email@gmail.com"
@@ -34,7 +35,17 @@ func TestLoginHandler(t *testing.T) {
 
 	helpers.MockJsonPost(ctx, body)
 
-	LoginHandler(ctx)
+	findUserSQL := regexp.QuoteMeta(`SELECT id, email, passwordHash, otpSecret, phone, 
+    EXTRACT(EPOCH FROM createdAt)::bigint, 
+    EXTRACT(EPOCH FROM updatedAt)::bigint 
+    FROM users WHERE email = $1`)
+
+	mock.ExpectQuery(findUserSQL).
+		WithArgs("email@gmail.com").
+		WillReturnRows(sqlmock.NewRows([]string{"id", "email", "passwordHash", "otpSecret", "phone", "createdAt", "updatedAt"}).
+			AddRow(1, "email@gmail.com", hashedPW, nil, "phone", 1633429591, 1633429591))
+
+	LoginHandler(ctx, db)
 
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }

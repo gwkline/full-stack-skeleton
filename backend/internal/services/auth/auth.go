@@ -39,7 +39,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func LoginHandler(c *gin.Context) {
+func LoginHandler(c *gin.Context, db *database.Database) {
 	var login Login
 
 	// Bind JSON body to struct
@@ -49,7 +49,7 @@ func LoginHandler(c *gin.Context) {
 		return
 	}
 
-	user, err := database.FindUser(login.Email, "email")
+	user, err := db.FindUser(login.Email, "email")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
@@ -77,7 +77,7 @@ func LoginHandler(c *gin.Context) {
 	})
 }
 
-func SignupHandler(c *gin.Context) {
+func SignupHandler(c *gin.Context, database *database.Database) {
 	var newUser model.NewUser
 
 	// Bind JSON body to struct
@@ -116,7 +116,7 @@ func SignupHandler(c *gin.Context) {
 	})
 }
 
-func Add2FA(c *gin.Context) {
+func Add2FA(c *gin.Context, database *database.Database) {
 	var login Login
 
 	err := c.BindJSON(&login)
@@ -147,7 +147,7 @@ func Add2FA(c *gin.Context) {
 	c.JSON(http.StatusOK, key.URL())
 }
 
-func RefreshTokenHandler(c *gin.Context) {
+func RefreshTokenHandler(c *gin.Context, database *database.Database) {
 	var data map[string]string
 	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

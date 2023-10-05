@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gwkline/full-stack-infra/backend/internal/helpers"
 )
 
 func TestMain(m *testing.M) {
@@ -101,7 +102,8 @@ func TestSetupRouter(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		r := setupRouter(tt.env)
+		db, _ := helpers.MockDB()
+		r := setupRouter(tt.env, db)
 
 		req, _ := http.NewRequest("OPTIONS", "/graphql", nil)
 
