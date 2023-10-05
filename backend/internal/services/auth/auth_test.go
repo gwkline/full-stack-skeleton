@@ -121,6 +121,27 @@ func Test2FAHandler(t *testing.T) {
 	assert.EqualValues(t, http.StatusOK, w.Code)
 }
 
+type JWT struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+func TestRefreshTokenHandler(t *testing.T) {
+
+	w := httptest.NewRecorder()
+	ctx := helpers.TestGinContext(w)
+	db, _ := helpers.MockDB()
+
+	var body JWT
+	body.AccessToken, _ = generateToken("email@gmail.com", time.Second*1)
+	body.RefreshToken, _ = generateToken("email@gmail.com", time.Hour*1)
+
+	helpers.MockJsonPost(ctx, body)
+
+	RefreshTokenHandler(ctx, db)
+	assert.EqualValues(t, http.StatusOK, w.Code)
+}
+
 func TestGenerateToken(t *testing.T) {
 	email := "test@example.com"
 	token, err := generateToken(email, AccessTokenDuration)
