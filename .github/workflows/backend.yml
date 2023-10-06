@@ -12,73 +12,23 @@ jobs:
     timeout-minutes: 3
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Go Build
-        uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
-          path: go-build-cache
-          key: ${{ runner.os }}-go-build-cache-${{ hashFiles('backend/**/go.sum') }}
-
-      - name: Inject Go Build Cache
-        uses: overmindtech/buildkit-cache-dance/inject@main
-        with:
-          cache-source: go-build-cache
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Cache Go Module and Build Cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/go/pkg/mod
-            ~/.cache/go-build
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-
-
-      - name: Build backend tests
-        uses: docker/build-push-action@v4
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile.test
-          tags: backend-tester
-          load: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-
-      - name: Run backend tests
-        run: docker run --name backend-tester -v ~/go/pkg/mod:/go/pkg/mod -v ~/.cache/go-build:/root/.cache/go-build backend-tester
-
-      - name: Extract Go Build Cache
-        uses: overmindtech/buildkit-cache-dance/extract@main
-        with:
-          cache-source: go-build-cache
-
-      - name: Copy coverage report out of container
-        run: |
-          docker cp backend-tester:/app/coverage.out coverage.out
-
+          go-version: "1.21.x"
+      - name: Install dependencies
+        run: go get .
+      - name: Build
+        run: go build -v ./...
+      - name: Test with the Go CLI
+        run: go test ./... -coverprofile=coverage.out
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           file: ./coverage.out
-
-      - name: Cleanup
-        run: |
-          docker rm backend-tester
 
   analyze:
     runs-on: ubuntu-latest
