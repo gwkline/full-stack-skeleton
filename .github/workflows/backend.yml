@@ -37,6 +37,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Cache Go Module and Build Cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
       - name: Build backend tests
         uses: docker/build-push-action@v4
         with:
@@ -48,7 +58,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
       - name: Run backend tests
-        run: docker run --name backend-tester backend-tester
+        run: docker run --name backend-tester -v ~/go/pkg/mod:/go/pkg/mod -v ~/.cache/go-build:/root/.cache/go-build backend-tester
 
       - name: Extract Go Build Cache
         uses: overmindtech/buildkit-cache-dance/extract@main
