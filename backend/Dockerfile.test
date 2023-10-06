@@ -8,6 +8,11 @@ RUN go mod download
 
 COPY . .
 
+# Mount Go Module cache
+VOLUME /go/pkg/mod
+# Mount Go Build cache
+VOLUME /root/.cache/go-build
+
 FROM golang:alpine
 
 WORKDIR /app
