@@ -14,3 +14,5 @@ vite.config.ts.timestamp-*
 
 # Sentry Auth Token
 .sentryclirc
+
+$houdini
