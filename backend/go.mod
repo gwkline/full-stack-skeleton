@@ -3,7 +3,7 @@ module github.com/gwkline/full-stack-infra/backend
 go 1.21
 
 require (
-	github.com/99designs/gqlgen v0.17.38
+	github.com/99designs/gqlgen v0.17.39
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/badoux/checkmail v1.2.1
 	github.com/getsentry/sentry-go v0.25.0
@@ -46,6 +46,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/sosodev/duration v1.1.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/urfave/cli/v2 v2.25.5 // indirect
