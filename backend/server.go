@@ -44,7 +44,7 @@ func setupRouter(env string, db *database.Database) *gin.Engine {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	router.SetTrustedProxies([]string{"127.0.0.1"})
+	// router.SetTrustedProxies([]string{"127.0.0.1"})
 
 	// Middleware
 	sentryMiddleware := sentrygin.New(sentrygin.Options{})
