@@ -99,7 +99,14 @@ func IsDirEmpty(dir string) (bool, error) {
 func (d *Database) RunMigrations() {
 	isEmpty, err := IsDirEmpty("./internal/database/migrations")
 	if err != nil {
-		log.Fatalf("Failed to check directory (maybe missing): %v", err)
+		os.Mkdir("./internal/database/migrations", os.ModePerm)
+		_, err := IsDirEmpty("./internal/database/migrations")
+		if err != nil {
+			log.Fatalf("Failed to check directory (maybe missing): %v", err)
+
+		} else {
+			fmt.Println("No migrations directory found, but was successfully created")
+		}
 		return
 	}
 
