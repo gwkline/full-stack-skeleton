@@ -31,7 +31,7 @@
     "tslib": "^2.6.2",
     "typescript": "^5.2.2",
     "vite": "^4.4.11",
-    "houdini": "^1.2.25",
+    "houdini": "^1.2.27",
     "houdini-svelte": "^1.2.25"
   },
   "type": "module",
