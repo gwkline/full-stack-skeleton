@@ -3,7 +3,7 @@ module github.com/gwkline/full-stack-infra/backend
 go 1.21
 
 require (
-	github.com/99designs/gqlgen v0.17.39
+	github.com/99designs/gqlgen v0.17.40
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/badoux/checkmail v1.2.1
 	github.com/getsentry/sentry-go v0.25.0
