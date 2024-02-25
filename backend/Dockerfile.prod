@@ -1,15 +1,23 @@
-FROM golang:alpine AS builder
+# --- BASE ---
+FROM golang:alpine AS base
 
 WORKDIR /app
 
-# Copy go mod and sum files first to leverage caching
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o main .
 
-FROM alpine:latest
+# --- TEST ---
+FROM base AS tester
+CMD go test ./... -coverprofile=coverage.out
+
+# --- BUILD ---
+FROM base AS builder
+RUN go build -o main cmd/api/main.go
+
+# --- RUN ---
+FROM alpine:latest AS release
 
 WORKDIR /app
 
@@ -17,3 +25,5 @@ WORKDIR /app
 COPY --from=builder /app/main ./
 
 EXPOSE 8888
+
+CMD /app/main

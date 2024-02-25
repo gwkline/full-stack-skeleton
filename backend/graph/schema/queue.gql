@@ -1,0 +1,20 @@
+type Queue {
+    name: String!
+    memoryUsageBytes: Int!
+    size: Int!
+    groups: Int!
+    latencyMsec: Int!
+    displayLatency: String!
+    active: Int!
+    pending: Int!
+    aggregating: Int!
+    scheduled: Int!
+    retry: Int!
+    archived: Int!
+    completed: Int!
+    processed: Int!
+    succeeded: Int!
+    failed: Int!
+    paused: Boolean!
+    timestamp: String!
+}

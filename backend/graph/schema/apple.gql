@@ -1,0 +1,26 @@
+type Apple {
+    id: ID!
+    variety: AppleVariety!
+}
+
+
+enum AppleVariety {
+    FUJI
+    GALA
+    HONEYCRISP
+    GOLDEN_DELICIOUS
+    RED_DELICIOUS
+    GRANNY_SMITH
+    BRAEBURN
+    JONAGOLD
+    CRIPPS_PINK
+    MCINTOSH
+    EMPIRE
+    JONATHAN
+    CORTLAND
+    WINESAP
+    AMBROSIA
+    COSMIC_CRISP
+    ENVY
+    JAZZ
+}

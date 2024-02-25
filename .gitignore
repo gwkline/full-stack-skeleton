@@ -1,2 +1,68 @@
 .env
 .DS_Store
+backend/tmp/
+backend/main
+go.work
+go.work.sum
+*.swp
+*.csv
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/frontend/node_modules
+/frontend/.pnp
+/frontend/.pnp.js
+/frontend/.yarn/install-state.gz
+
+# testing
+/frontend/coverage
+
+# next.js
+/frontend/.next/
+/frontend/out/
+
+# production
+/frontend/build
+
+# misc
+/frontend/.DS_Store
+/frontend/*.pem
+
+# debug
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# local env files
+/frontend/.env*.local
+
+# vercel
+/frontend/.vercel
+
+# typescript
+/frontend/*.tsbuildinfo
+/frontend/next-env.d.ts
+
+/frontend/tailwind.config.js/
+
+/frontend/.DS_Store
+/frontend/node_modules
+/frontend/build
+/frontend/.svelte-kit
+/frontend/package
+/frontend/.env
+/frontend/.env.local
+/frontend/vite.config.js.timestamp-*
+/frontend/vite.config.ts.timestamp-*
+
+# Terraform
+do_token.txt
+.terraform
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+
+# Sentry Config File
+/frontend/.sentryclirc

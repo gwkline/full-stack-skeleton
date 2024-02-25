@@ -1,0 +1,64 @@
+type Viewer {
+  id: ID!
+  createdAt: Time!
+  updatedAt: Time!
+  email: String!
+  role: Role!
+
+  appleConnection(
+    input: ConnectionInput!
+  ): AppleConnection! @hasRole(role: USER)
+
+  apples(input: AppleQueryInput): [Apple!]! @hasRole(role: USER)
+
+  queue: Queue! @hasRole(role: USER)
+}
+
+
+input AppleQueryInput {
+  userId: ID
+  variety: String
+}
+
+
+type JWT {
+  accessToken: String!
+  refreshToken: String!
+}
+
+
+input UserInput {
+  email: String!
+  password: String!
+  phone: String
+}
+
+input RefreshInput {
+  accessToken: String!
+  refreshToken: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+  otp: String
+}
+
+input ConnectionInput {
+  limit: Int
+  after: String
+  sortBy: String
+  direction: AscOrDesc
+  query: String
+  filters: [FilterInput!]
+}
+
+input FilterInput {
+  field: String!
+  value: [String!]!
+}
+
+enum AscOrDesc {
+  ASC
+  DESC
+}

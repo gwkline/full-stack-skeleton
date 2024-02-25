@@ -1,22 +1,19 @@
-# Build stage
+# --- BUILD ---
 FROM golang:alpine AS build-env
 
-# Set up the working directory
 WORKDIR /app
 
-# Copy go mod and sum files
+RUN go install github.com/cosmtrek/air@latest
 COPY go.mod go.sum ./
-
-# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
 RUN go mod download
 
-# Final stage
+# --- RUN ---
 FROM golang:alpine
 
-# Set up the working directory and copy over dependencies and source code
 WORKDIR /app
 COPY --from=build-env /go/pkg/mod /go/pkg/mod
+COPY --from=build-env /go/bin/air /go/bin/air
 COPY . .
 
 EXPOSE 8888
-CMD [ "go", "run", "server.go"]
+CMD ["air"]

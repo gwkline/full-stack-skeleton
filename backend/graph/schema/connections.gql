@@ -1,0 +1,16 @@
+type PageInfo {
+  startCursor: String!
+  endCursor: String!
+  hasNextPage: Boolean!
+  count: Int!
+}
+
+type AppleConnection {
+  edges: [AppleEdge!]!
+  pageInfo: PageInfo!
+}
+
+type AppleEdge {
+  cursor: String!
+  node: Apple!
+}

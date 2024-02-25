@@ -9,65 +9,91 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           cache-dependency-path: "backend/go.sum"
           go-version-file: "backend/go.mod"
+
       - name: Install dependencies
-        working-directory: ./backend
+        working-directory: ./backend/cmd/api
         run: go get .
+
       - name: Test with the Go CLI
         working-directory: ./backend
-        run: go test -v ./... -bench=. -run=xxx -benchme -coverprofile=coverage.out
+        run: go test ./... -coverprofile=coverage.out
+
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           file: ./backend/coverage.out
-
-  analyze:
+  
+  build:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 3
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Test image and export
+        uses: docker/build-push-action@v5
         with:
-          languages: go
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          target: release
+          tags: release-image:latest
+          outputs: type=docker,dest=/tmp/release-image.tar
 
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-
+      - name: Upload Test image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-image-${{ github.sha }}
+          path: /tmp/release-image.tar
+          retention-days: 1
+        
   deploy:
     if: github.ref == 'refs/heads/main'
-    needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    needs: ["build", "test"]
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Build backend
+      - name: Download Release image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-image-${{ github.sha }}
+          path: /tmp
+      - name: Load Release image
         run: |
-          docker build -f ./backend/Dockerfile.prod -t backend ./backend
-      - name: Tag and Push to Docker Hub
-        run: |
-          docker tag backend:latest gwkline/full-stack-skeleton:backend-latest
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-          docker push gwkline/full-stack-skeleton:backend-latest
+          docker load --input /tmp/release-image.tar
+
+      - name: Tag the image for Dockerhub
+        run: docker tag release-image:latest gwkline/full-stack-skeleton:backend-latest
+  
+
+      - name: Set Release Version from Tag
+        run: echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+      
+      # - name: New Relic Application Deployment Marker
+      #   uses: newrelic/deployment-marker-action@v2.5.0
+      #   with:
+      #     apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+      #     guid: ${{ secrets.NEW_RELIC_DEPLOYMENT_ENTITY_GUID }}
+      #     version: "${{ env.RELEASE_VERSION }}"
+      #     user: "${{ github.actor }}"
+
+      - name: Login to Docker Registry
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push to Dockerhub
+        run: docker push gwkline/full-stack-skeleton:backend-latest

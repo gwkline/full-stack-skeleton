@@ -1,0 +1,5 @@
+type Query {
+  heartbeat: Boolean!
+  viewer: Viewer! @hasRole(role: USER)
+}
+

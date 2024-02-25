@@ -1,0 +1,33 @@
+type Mutation {
+  createApple(input: AppleCreateInput!): [Apple!]!
+  updateApple(input: AppleUpdateInput!): Boolean!
+  deleteApple(input: DeleteInput!): Boolean!
+
+  login(input: LoginInput!): JWT!
+  signup(input: UserInput!): JWT!
+  refreshToken(input: RefreshInput!): JWT!
+
+  toggleQueuePaused: Boolean! @hasRole(role: ADMIN)
+  clearQueue(input:  ClearQueueInput!): Boolean! @hasRole(role: ADMIN)
+}
+
+input ClearQueueInput {
+  userId: ID
+}
+
+input DeleteInput {
+  ids: [ID]!
+}
+
+input AppleCreateInput {
+  variety: AppleVariety!
+  userId: ID!
+  quantity: Int!
+}
+
+input AppleUpdateInput {
+  appleId: ID!
+  userId: ID
+  variety: AppleVariety
+  quantity: Int
+}

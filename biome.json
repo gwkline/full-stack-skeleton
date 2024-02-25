@@ -1,0 +1,32 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.5.3/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"nursery": {
+				"noUnusedImports": "error",
+				"noUnusedPrivateClassMembers": "error"
+			}
+		}
+	},
+	"files": {
+		"ignore": [
+			"node_modules/*",
+			".next/*",
+			"./components/ui/*",
+			"./public/*",
+			"./gql/graphql-env.d.ts",
+			"./tada/*",
+			"./.sentryclirc",
+			"./Dockerfile.prod",
+			"./Dockerfile.dev",
+			"./.dockerignore",
+			"./.DS_Store",
+			"./bun.lockb"
+		]
+	}
+}

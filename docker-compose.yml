@@ -1,0 +1,90 @@
+version: "3.8"
+services:
+  database:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+  
+  dummy-database:
+    image: postgres:latest
+    ports:
+      - "5433:5433"
+    restart: always
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    command: -p 5433
+
+  backend:
+    image: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - database
+      - redis
+    ports:
+      - "8888:8888"
+    restart: always
+    env_file:
+      - .env
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1.00'
+    #       memory: 1024M
+    #     reservations:
+    #       cpus: '1.00'
+    #       memory: 1024M
+    develop:
+      watch:
+        - action: rebuild
+          path: docker-compose.yaml
+        - action: sync
+          path: ./backend
+          target: ./app
+        - action: rebuild
+          path: ./backend/go.mod
+
+  frontend:
+    image: frontend
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: ./app
+          ignore: 
+           - node_modules
+           - .next
+        - action: rebuild
+          path: ./frontend/package.json
+
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+
+volumes:
+  database-data:

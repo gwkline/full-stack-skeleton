@@ -1,0 +1,5 @@
+Dockerfile.dev
+Dockerfile.prod
+.DS_Store
+.dockerignore
+gqlgen.yml

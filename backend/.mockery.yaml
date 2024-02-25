@@ -1,0 +1,11 @@
+with-expecter: true
+recursive: true
+all: true
+outpkg: mocks
+dir: mocks
+include-auto-generated: false
+disable-config-search: true
+mockname: "{{.InterfaceName}}"
+filename: "{{.InterfaceName}}.go"
+packages:
+    github.com/gwkline/full-stack-skeleton/backend/types:

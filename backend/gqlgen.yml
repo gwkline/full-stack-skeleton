@@ -1,30 +1,54 @@
+# @/gqlgen.yml
+
 # Where are all the schema files located? globs are supported eg  src/**/*.graphqls
 schema:
-  - internal/graph/*.graphqls
+  - graph/schema/*.gql
 
 # Where should the generated server code go?
 exec:
-  filename: internal/graph/generated.go
-  package: graph
-
-# Uncomment to enable federation
-# federation:
-#   filename: internal/graph/federation.go
-#   package: graph
+  filename: graph/generated/generated.go
+  package: generated
 
 # Where should any generated models go?
 model:
-  filename: internal/graph/model/models_gen.go
-  package: model
+  filename: graph/generated/types.go
+  package: generated
 
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
-  dir: internal/graph
-  package: graph
-  filename_template: "{name}.resolvers.go"
+  dir: graph/resolver
+  package: resolver
+  filename_template: "{name}_resolver.go"
   # Optional: turn on to not generate template comments above resolvers
-  # omit_template_comment: false
+  omit_template_comment: true
+
+# gqlgen will search for any type names in the schema in these go packages
+# if they match it will use them, otherwise it will generate them.
+autobind:
+  - "github.com/gwkline/full-stack-skeleton/backend/types" 
+  - "github.com/gwkline/full-stack-skeleton/backend/graph/scalars"
+
+models:
+  Viewer:
+    model:
+      - github.com/gwkline/full-stack-skeleton/backend/types.User
+  ID:
+    model:
+      - github.com/gwkline/full-stack-skeleton/backend/graph/scalars.ID
+
+  Int:
+    model:
+      - github.com/99designs/gqlgen/graphql.Int
+      - github.com/99designs/gqlgen/graphql.Int64
+      - github.com/99designs/gqlgen/graphql.Int32
+  UUID:
+    model:
+      - github.com/99designs/gqlgen/graphql.UUID
+# Uncomment to enable federation
+# federation:
+#   filename: graph/federation.go
+#   package: graph
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json
@@ -36,13 +60,13 @@ resolver:
 # omit_interface_checks : true
 
 # Optional: turn on to skip generation of ComplexityRoot struct content and Complexity function
-# omit_complexity: false
+omit_complexity: true
 
 # Optional: turn on to not generate any file notice comments in generated files
-# omit_gqlgen_file_notice: false
+omit_gqlgen_file_notice: true
 
 # Optional: turn on to exclude the gqlgen version in the generated file notice. No effect if `omit_gqlgen_file_notice` is true.
-# omit_gqlgen_version_in_file_notice: false
+omit_gqlgen_version_in_file_notice: true
 
 # Optional: turn off to make struct-type struct fields not use pointers
 # e.g. type Thing struct { FieldA OtherThing } instead of { FieldA *OtherThing }
@@ -56,36 +80,14 @@ resolver:
 
 # Optional: wrap nullable input fields with Omittable
 # nullable_input_omittable: true
-
 # Optional: set to speed up generation time by not performing a final validation pass.
 # skip_validation: true
 
 # Optional: set to skip running `go mod tidy` when generating server code
 # skip_mod_tidy: true
 
-# gqlgen will search for any type names in the schema in these go packages
-# if they match it will use them, otherwise it will generate them.
-autobind:
-  - "github.com/gwkline/full-stack-infra/backend/internal/graph/model"
-
 # This section declares type mapping between the GraphQL and go type systems
 #
 # The first line in each type will be used as defaults for resolver arguments and
 # modelgen, the others will be allowed when binding to fields. Configure them to
 # your liking
-models:
-  ID:
-    model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
-  Int:
-    model:
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
-  Todo:
-    fields:
-      user:
-        resolver: true

@@ -1,16 +1,69 @@
-FROM node:alpine AS builder
-WORKDIR /app
-COPY package*.json .
-RUN npm ci
-COPY . .
-RUN npm run build
-RUN npm prune --production
+# Step 1. Setup base image with preferred runtime
+FROM node:20-bookworm-slim AS base
 
-FROM node:alpine
 WORKDIR /app
-COPY --from=builder /app/build build/
-COPY --from=builder /app/node_modules node_modules/
-COPY package.json .
-EXPOSE 3000
-ENV NODE_ENV=production
-CMD npm build
+
+RUN npm install -g bun
+
+# libc6-compat may be needed for Alpine-based images
+# https://github.com/nodejs/docker-node/tree/main#nodealpine
+# RUN apk add --no-cache libc6-compat
+
+# Step 2. Rebuild the source code only when needed
+FROM base AS builder
+
+WORKDIR /app
+
+# Install dependencies based on the preferred package manager
+COPY package.json bun.lockb* ./
+RUN bun i
+
+COPY . .
+
+# Environment variables must be present at build time
+# https://github.com/vercel/next.js/discussions/14030
+ARG ENV_VARIABLE
+ENV ENV_VARIABLE=${ENV_VARIABLE}
+ARG NEXT_PUBLIC_ENV_VARIABLE
+ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_GRAPHQL_URL="http://localhost:8888/graphql"
+
+# Build Next.js based on the preferred package manager
+RUN bun run build
+
+# Step 3. Production image, copy all the files and run next
+FROM base AS runner
+
+WORKDIR /app
+
+# Don't run as root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+
+# Set the correct permission for prerender cache
+RUN mkdir ./.next
+RUN chown nextjs:nodejs ./.next
+
+# Automatically leverage output traces to reduce image size
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+# Environment variables must be redefined at run time
+ARG ENV_VARIABLE
+ENV ENV_VARIABLE=${ENV_VARIABLE}
+ARG NEXT_PUBLIC_ENV_VARIABLE
+ENV NEXT_PUBLIC_ENV_VARIABLE=${NEXT_PUBLIC_ENV_VARIABLE}
+ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_GRAPHQL_URL="http://localhost:8888/graphql"
+
+EXPOSE 3001
+ENV PORT 3001
+
+# Run Next.js based on the preferred runtime
+CMD node server.js
