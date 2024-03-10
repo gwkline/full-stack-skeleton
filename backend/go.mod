@@ -9,7 +9,7 @@ require (
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
 	github.com/gdgvda/cron v0.2.0
 	github.com/getsentry/sentry-go v0.27.0
-	github.com/gin-contrib/cors v1.6.0
+	github.com/gin-contrib/cors v1.7.0
 	github.com/gin-contrib/gzip v0.0.6
 	github.com/gin-contrib/pprof v1.4.0
 	github.com/gin-gonic/gin v1.9.1
