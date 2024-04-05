@@ -19,7 +19,7 @@ require (
 	github.com/hibiken/asynqmon v0.7.2
 	github.com/newrelic/go-agent/v3 v3.32.0
 	github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.0
-	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.1
+	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.0
 	github.com/rafaelhl/gorm-newrelic-telemetry-plugin v1.0.0
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/stretchr/testify v1.9.0
