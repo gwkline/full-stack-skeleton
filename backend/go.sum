@@ -337,6 +337,8 @@ github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.0 h1:P1YjRtD7dsP7G/+nZQ
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.0/go.mod h1:XKdAgg6FSzCGaNR5dZwr7H2fzlbMU0A49lo/1JScWMo=
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.1 h1:65leg/zs9V6StXt4oxt5im0VxMZc6LRomPKHrlPv8P8=
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.1/go.mod h1:j+x18XsGM4wWUzHSCrrKeKILD2JaDQ5bFf8DM/ZanRk=
+github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.0 h1:aT9xRekVkt0aJdX2ebZuiWMkwqCcC8IHvjHddh/+7qw=
+github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.0/go.mod h1:l7DSVUZzYyjY8mOR/ybiHMP20raWuStebhOrGgXg0mQ=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.8/go.mod h1:+ncqLTQzXmGhMZNUePPaPqPvBxHAIsmXswZKocGu+AU=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
