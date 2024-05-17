@@ -41,7 +41,7 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "gql.tada": "^1.2.1",
-    "graphql-request": "^6.1.0",
+    "graphql-request": "^7.0.0",
     "lucide-react": "^0.340.0",
     "next": "canary",
     "next-client-cookies": "^1.1.0",
