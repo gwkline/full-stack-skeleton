@@ -3,7 +3,7 @@ module github.com/gwkline/full-stack-skeleton/backend
 go 1.22
 
 require (
-	github.com/99designs/gqlgen v0.17.46
+	github.com/99designs/gqlgen v0.17.47
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/badoux/checkmail v1.2.4
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
@@ -71,7 +71,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/sosodev/duration v1.3.0 // indirect
+	github.com/sosodev/duration v1.3.1 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
