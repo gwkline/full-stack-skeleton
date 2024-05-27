@@ -8,7 +8,7 @@ require (
 	github.com/badoux/checkmail v1.2.4
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
 	github.com/gdgvda/cron v0.2.0
-	github.com/getsentry/sentry-go v0.27.0
+	github.com/getsentry/sentry-go v0.28.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-contrib/gzip v1.0.1
 	github.com/gin-contrib/pprof v1.5.0
