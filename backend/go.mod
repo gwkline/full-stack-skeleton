@@ -3,7 +3,7 @@ module github.com/gwkline/full-stack-skeleton/backend
 go 1.22
 
 require (
-	github.com/99designs/gqlgen v0.17.47
+	github.com/99designs/gqlgen v0.17.48
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/badoux/checkmail v1.2.4
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
