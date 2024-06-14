@@ -14,7 +14,7 @@ require (
 	github.com/gin-contrib/pprof v1.5.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
-	github.com/gorilla/websocket v1.5.2
+	github.com/gorilla/websocket v1.5.3
 	github.com/hibiken/asynq v0.24.1
 	github.com/hibiken/asynqmon v0.7.2
 	github.com/newrelic/go-agent/v3 v3.33.0
