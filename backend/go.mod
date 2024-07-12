@@ -21,7 +21,7 @@ require (
 	github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.1
 	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.0
 	github.com/rafaelhl/gorm-newrelic-telemetry-plugin v1.0.0
-	github.com/redis/go-redis/v9 v9.5.3
+	github.com/redis/go-redis/v9 v9.5.4
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.16
 	golang.org/x/crypto v0.25.0
