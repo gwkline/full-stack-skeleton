@@ -105,6 +105,8 @@ github.com/gabriel-vasile/mimetype v1.4.3 h1:in2uUcidCuFcDKtdcBxlR0rJ1+fsokWf+uq
 github.com/gabriel-vasile/mimetype v1.4.3/go.mod h1:d8uq/6HKRL6CGdk+aubisF/M5GcPfT7nKyLpA0lbSSk=
 github.com/gdgvda/cron v0.2.0 h1:oX8qdLZq4tC5StnCsZsTNs2BIzaRjcjmPZ4o+BArKX4=
 github.com/gdgvda/cron v0.2.0/go.mod h1:VEwidZXB255kESB5DcUGRWTYZS8KkOBYD1YBn8Wiyx8=
+github.com/gdgvda/cron v0.3.0 h1:Wjj9NSYGzvtjkdZxOjpU749OuJGpcqr/tSxzeeBQGVI=
+github.com/gdgvda/cron v0.3.0/go.mod h1:caBF+mzTZGtQqFE05T1m6u9OmCASY3EK51XAICf3wio=
 github.com/getsentry/sentry-go v0.27.0 h1:Pv98CIbtB3LkMWmXi4Joa5OOcwbmnX88sF5qbK3r3Ps=
 github.com/getsentry/sentry-go v0.27.0/go.mod h1:lc76E2QywIyW8WuBnwl8Lc4bkmQH4+w1gwTf25trprY=
 github.com/getsentry/sentry-go v0.28.0 h1:7Rqx9M3ythTKy2J6uZLHmc8Sz9OGgIlseuO1iBX/s0M=
