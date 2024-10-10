@@ -17,8 +17,8 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hibiken/asynq v0.24.1
 	github.com/hibiken/asynqmon v0.7.2
-	github.com/newrelic/go-agent/v3 v3.34.0
-	github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.1
+	github.com/newrelic/go-agent/v3 v3.35.0
+	github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.2
 	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.0
 	github.com/rafaelhl/gorm-newrelic-telemetry-plugin v1.0.0
 	github.com/redis/go-redis/v9 v9.6.1
@@ -34,7 +34,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.2 // indirect
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
-	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
@@ -47,7 +47,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -83,7 +83,7 @@ require (
 	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
-	google.golang.org/grpc v1.56.3 // indirect
-	google.golang.org/protobuf v1.34.1 // indirect
+	google.golang.org/grpc v1.65.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
