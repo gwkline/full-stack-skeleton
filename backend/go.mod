@@ -16,7 +16,7 @@ require (
 	github.com/gin-contrib/gzip v1.2.3
 	github.com/gin-contrib/pprof v1.5.3
 	github.com/gin-gonic/gin v1.10.1
-	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/hibiken/asynq v0.24.1
 	github.com/hibiken/asynqmon v0.7.2
