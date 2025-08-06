@@ -432,6 +432,8 @@ github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.1 h1:JoIIS37S/tW/6Y/5cGI
 github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.1/go.mod h1:/EjSYMXsMO34+imRoQlPU5hFUlP+u/dwowF+OKMw8TQ=
 github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.2 h1:z3joEubnrRNUnBgNd+JJ8oJURW7h6lwI/yc3CwZQXXI=
 github.com/newrelic/go-agent/v3/integrations/nrgin v1.3.2/go.mod h1:yZ+3kTSN7pBWnt2wP7BFvluktBoLtSvCevAW0wNeO+g=
+github.com/newrelic/go-agent/v3/integrations/nrgin v1.4.2 h1:AdWN/9G5fkIgAUfnMnChr2ZL1jKbicZxNSsn99s4wgc=
+github.com/newrelic/go-agent/v3/integrations/nrgin v1.4.2/go.mod h1:8mDVuKhV1U/NhuL8HLB0YxheDHCuo/dRqW4OgFiTMwI=
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.0 h1:P1YjRtD7dsP7G/+nZQGublcYQcPFDA3vImveaomy1S8=
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.0/go.mod h1:XKdAgg6FSzCGaNR5dZwr7H2fzlbMU0A49lo/1JScWMo=
 github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.2.1 h1:65leg/zs9V6StXt4oxt5im0VxMZc6LRomPKHrlPv8P8=
