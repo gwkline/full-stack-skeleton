@@ -10,7 +10,7 @@ require (
 	github.com/badoux/checkmail v1.2.4
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
 	github.com/gdgvda/cron v0.4.0
-	github.com/getsentry/sentry-go v0.35.0
+	github.com/getsentry/sentry-go v0.35.1
 	github.com/getsentry/sentry-go/gin v0.35.0
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.3
