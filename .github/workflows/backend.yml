@@ -56,7 +56,7 @@ jobs:
           outputs: type=docker,dest=/tmp/release-image.tar
 
       - name: Upload Test image artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: release-image-${{ github.sha }}
           path: /tmp/release-image.tar
@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Download Release image artifact
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: release-image-${{ github.sha }}
           path: /tmp
