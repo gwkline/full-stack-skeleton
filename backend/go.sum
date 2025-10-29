@@ -171,6 +171,8 @@ github.com/getsentry/sentry-go/gin v0.36.0 h1:bsG5pE3Sbw/e8ohgyJW31igCjDuIoNnAUO
 github.com/getsentry/sentry-go/gin v0.36.0/go.mod h1:VO6RE4iTuK+sIaI70kojBg7XhlK6qDVWMsGp21HDGyA=
 github.com/getsentry/sentry-go/gin v0.36.1 h1:mJhf6WKnjsQsE+Ppt+KZjYQz1ZxYr/+IIuXZs46HFNI=
 github.com/getsentry/sentry-go/gin v0.36.1/go.mod h1:q6cuGPKNytp/pv5Ydc804ByLrNVQs+vZBSk4ZpPKVvM=
+github.com/getsentry/sentry-go/gin v0.36.2 h1:HXd9B/oGW1Pzld431pYg4h3wQnCuusodhB9QT4lEsk8=
+github.com/getsentry/sentry-go/gin v0.36.2/go.mod h1:uiQvFjBrO1omB9maB1WqTeCPSZ3q7TFpj5vnwDi1hjE=
 github.com/gin-contrib/cors v1.5.0 h1:DgGKV7DDoOn36DFkNtbHrjoRiT5ExCe+PC9/xp7aKvk=
 github.com/gin-contrib/cors v1.5.0/go.mod h1:TvU7MAZ3EwrPLI2ztzTt3tqgvBCq+wn8WpZmfADjupI=
 github.com/gin-contrib/cors v1.6.0 h1:0Z7D/bVhE6ja07lI8CTjTonp6SB07o8bNuFyRbsBUQg=
