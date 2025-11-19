@@ -11,7 +11,7 @@ require (
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
 	github.com/gdgvda/cron v0.5.0
 	github.com/getsentry/sentry-go v0.38.0
-	github.com/getsentry/sentry-go/gin v0.37.0
+	github.com/getsentry/sentry-go/gin v0.38.0
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/pprof v1.5.3
