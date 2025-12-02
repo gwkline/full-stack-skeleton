@@ -2,7 +2,7 @@ module github.com/gwkline/full-stack-skeleton/backend
 
 go 1.24.0
 
-toolchain go1.25.4
+toolchain go1.25.5
 
 require (
 	github.com/99designs/gqlgen v0.17.49
