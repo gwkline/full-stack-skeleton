@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.25.7
 
 require (
-	github.com/99designs/gqlgen v0.17.49
+	github.com/99designs/gqlgen v0.17.86
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/badoux/checkmail v1.2.4
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
@@ -34,7 +34,7 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.2.1 // indirect
-	github.com/andybalholm/cascadia v1.3.2 // indirect
+	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.14.1 // indirect
 	github.com/bytedance/sonic/loader v0.3.0 // indirect
@@ -50,8 +50,9 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.28.0 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-json v0.10.5 // indirect
-	github.com/goccy/go-yaml v1.18.0 // indirect
+	github.com/goccy/go-yaml v1.19.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -94,6 +95,6 @@ require (
 	golang.org/x/tools v0.40.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	google.golang.org/grpc v1.65.0 // indirect
-	google.golang.org/protobuf v1.36.10 // indirect
+	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
