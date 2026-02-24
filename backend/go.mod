@@ -11,7 +11,7 @@ require (
 	github.com/ec2-software/gqlgen-introspect-filter v0.3.2
 	github.com/gdgvda/cron v0.5.0
 	github.com/getsentry/sentry-go v0.43.0
-	github.com/getsentry/sentry-go/gin v0.42.0
+	github.com/getsentry/sentry-go/gin v0.43.0
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/pprof v1.5.3
@@ -87,7 +87,7 @@ require (
 	go.uber.org/mock v0.6.0 // indirect
 	golang.org/x/arch v0.22.0 // indirect
 	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/net v0.50.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
 	golang.org/x/text v0.34.0 // indirect
