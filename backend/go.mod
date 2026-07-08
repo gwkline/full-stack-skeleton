@@ -12,7 +12,7 @@ require (
 	github.com/gdgvda/cron v0.5.0
 	github.com/getsentry/sentry-go v0.43.0
 	github.com/getsentry/sentry-go/gin v0.43.0
-	github.com/gin-contrib/cors v1.7.6
+	github.com/gin-contrib/cors v1.7.7
 	github.com/gin-contrib/gzip v1.2.5
 	github.com/gin-contrib/pprof v1.5.3
 	github.com/gin-gonic/gin v1.12.0
@@ -86,7 +86,7 @@ require (
 	go.mongodb.org/mongo-driver/v2 v2.5.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/mock v0.6.0 // indirect
-	golang.org/x/arch v0.22.0 // indirect
+	golang.org/x/arch v0.23.0 // indirect
 	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
