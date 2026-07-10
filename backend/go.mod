@@ -20,7 +20,7 @@ require (
 	github.com/gorilla/websocket v1.5.3
 	github.com/hibiken/asynq v0.26.0
 	github.com/hibiken/asynqmon v0.7.2
-	github.com/newrelic/go-agent/v3 v3.43.3
+	github.com/newrelic/go-agent/v3 v3.44.1
 	github.com/newrelic/go-agent/v3/integrations/nrgin v1.4.2
 	github.com/newrelic/go-agent/v3/integrations/nrpgx5 v1.3.4
 	github.com/rafaelhl/gorm-newrelic-telemetry-plugin v1.0.0
